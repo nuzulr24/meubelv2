@@ -11,7 +11,7 @@
 @section('content-header')
 <h1>
     Manajemen Kategori
-    <small>Halaman manajemen kategori pada prooduk</small>
+    <small>Halaman manajemen kategori pada produk</small>
 </h1>
 <ol class="breadcrumb">
     <li><a href="{{ route('beranda_admin') }}"><i class="fa fa-home"></i> Beranda</a></li>
@@ -45,13 +45,18 @@
                     Form Input Kategori Produk
                 </h3>
             </div>
-            {!! Form::open(['route' => 'tambah_kategori']) !!}
+            {!! Form::open(['route' => 'tambah_kategori', 'files' => true]) !!}
                 @csrf
                 <div class="box-body">
                     <div class="form-group has-feedback">
                         {!! Form::label('inp_nama_kategori', 'Nama Kategori') !!}
                         {!! Form::text('nama_kategori', null, ['id' => 'inp_nama_kategori', 'class' => 'form-control']) !!}
                         <span class="help-block">Silahkan masukan kategori produk</span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        {!! Form::label('exampleEmail1', 'Foto Kategori') !!}
+                        {!! Form::file('foto', ['id' => 'inp_foto_barang', 'class' => 'form-control' , 'style' => 'border: none;', 'accept' => '.jpg, .jpeg, .png']) !!}
+                        <span class="help-block"><small>Silahkan pilih foto kategori</small></span>
                     </div>
                     <div class="form-group has-feedback">
                         <button type="button" id="check_kategori" class="btn btn-success btn-flat btn-block" class="form-control"><i class="fa fa-search fa-fw"></i> Check Nama kategori</button>
@@ -127,7 +132,7 @@
                     <span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Edit Kategori Produk</h4>
             </div>
-            {!! Form::open(['id' => 'form_edit_kategori', 'method' => 'PUT']) !!}
+            {!! Form::open(['id' => 'form_edit_kategori', 'method' => 'PUT', 'files' => true]) !!}
                 <div class="modal-body">
                     <div class="form-group has-feedback">
                         {!! Form::label('text_id_kategori', 'ID Kategori') !!}
@@ -136,6 +141,11 @@
                     <div class="form-group has-feedback">
                         {!! Form::label('inp_nama_kategori_produk', 'Nama Kategori Produk') !!}
                         {!! Form::text('nama_kategori', null, ['class' => 'form-control nama_kategori']) !!}
+                    </div>
+                    <div class="form-group has-feedback">
+                        {!! Form::label('inp_foto_barang', 'Foto Kategori') !!}
+                        {!! Form::file('foto', ['class' => 'form-control' , 'style' => 'border: none;', 'accept' => '.jpg, .jpeg, .png']) !!}
+                        <span class="help-block"><small>Silahkan pilih foto kategori</small></span>
                     </div>
                 </div>
                 <div class="modal-footer">

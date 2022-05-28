@@ -13,7 +13,7 @@
     Edit Rekening
 </h1>
 <ol class="breadcrumb">
-    <li><a href="{{ route('pengaturan') }}"><i class="fa fa-home"></i> Beranda</a></li>
+    <li><a href="{{ route('beranda_admin') }}"><i class="fa fa-home"></i> Beranda</a></li>
     <li><i class="fa fa-cubes fa-fw"></i> Rekening</li>
     <li class="active"><i class="fa fa-tags fa-fw"></i> Edit Rekening</li>
 </ol>
@@ -43,17 +43,18 @@
         <div class="box box-success">
             <div class="box-header">
                 <h3 class="box-title">
-                    Edit Rekening
+                    Edit
                 </h3>
             </div>
             <div class="box-body">
-            {!! Form::open(['method' => 'POST']) !!}
+            {!! Form::open(['route' => 'pengaturan']) !!}
             @csrf
             <div class="form-group has-feedback">
-                <input type="hidden" name="tipe" value="5">
                 {!! Form::label('exampleEmail1', 'Atas Nama') !!}
+                {!! Form::hidden('tipe', 5) !!}
+                {!! Form::hidden('id_rekening', $detail->id) !!}
                 {!! Form::text('atas_nama',  $detail->atas_nama, ['id' => 'atas_nama', 'class' => 'form-control']) !!}
-                <span class="help-block"><small>Masukan atas nama tanpa karakter khusus dan angka</small></span>
+                <span class="help-block"><small>Masukan atas nama tanpa karakter khusus</small></span>
             </div>
             <div class="form-group has-feedback">
                 {!! Form::label('exampleEmail1', 'Nomor Rekening') !!}
@@ -72,6 +73,20 @@
                     <?php } ?>
                 </select>
                 <span class="help-block"><small>Silahkan pilih kategori bank yang sesuai</small></span>
+            </div>
+            <div class="form-group has-feedback">
+                {!! Form::label('exampleEmail1', 'Status Aktif') !!}
+                <select name="is_active" id="is_active" class="form-control">
+                    <option value="">=== STATUS ===</option>
+                    <?php $lists = [0,1]; foreach($lists as $item) { 
+                        $select = $item == $detail->is_active ? 'selected' : '';    
+                        $selected = $item == $detail->is_active ? '(selected)' : '';
+                        $names = $item == 1 ? 'Aktif' : 'Tidak Aktif';
+                    ?>
+                        <option value="{{ $item }}" {{ $select }}>{{ $names }} {{ $selected }}</option>
+                    <?php } ?>
+                </select>
+                <span class="help-block"><small>Silahkan pilih status</small></span>
             </div>
             <div class="form-group has-feedback">
                 <button type="submit" name="simpan" value="true" class="btn btn-primary btn-flat">Edit</button>

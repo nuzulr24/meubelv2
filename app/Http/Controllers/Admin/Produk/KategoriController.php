@@ -6,6 +6,7 @@ use DateTime;
 use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 
 class KategoriController extends Controller
@@ -30,7 +31,8 @@ class KategoriController extends Controller
         if($request->has('simpan')) {
 
             $validasi = Validator::make($request->all(), [
-                'nama_kategori' => 'required|regex:/^[a-zA-Z\s]*$/|max:30'
+                'nama_kategori' => 'required|regex:/^[a-zA-Z\s]*$/|max:30',
+                'foto' => 'required|mimes:jpg,jpeg,png'
             ]);
 
             if ($validasi->fails()) {
@@ -41,9 +43,13 @@ class KategoriController extends Controller
 
             if(DB::table('tbl_kategori')->where('nama_kategori', $request->input('nama_kategori'))->exists() == false) {
 
+                $save_favicon = Storage::putFileAs(
+                'public/kategori/', $request->file('foto'), $request->file('foto')->getClientOriginalName());
+
                 DB::table('tbl_kategori')->insert([
                     'id_kategori'   => $this->set_id_kategori(),
                     'nama_kategori' => $request->input('nama_kategori'),
+                    'foto' => $request->file('foto')->getClientOriginalName()
                 ]);
 
                 return redirect()->route('kategori_produk')->with('success', 'kategori Produk Berhasil Di Tambah');
@@ -76,18 +82,33 @@ class KategoriController extends Controller
 
             }
 
-            if(DB::table('tbl_kategori')->where('nama_kategori', $request->input('nama_kategori'))->exists() == false) {
+            if(DB::table('tbl_kategori')->where('nama_kategori', $request->input('nama_kategori'))->exists() == true) {
+
+                $data = DB::table('tbl_kategori')->select('foto')->where('id_kategori', $id_kategori)->first();
+
+
+                if($request->hasFile('foto')) {
+
+                    Storage::delete('public/produk/'.$data->foto);
+
+                    $save_foto = Storage::putFileAs(
+                        'public/kategori/',
+                        $request->file('foto'), $request->file('foto')->getClientOriginalName()
+                    );
+
+                    $foto_produk = basename($save_foto);
+
+                }
 
                 DB::table('tbl_kategori')->where('id_kategori', $id_kategori)
-                    ->update(['nama_kategori' => $request->input('nama_kategori')]);
+                    ->update([
+                        'nama_kategori' => $request->input('nama_kategori'),
+                        'foto' => $request->hasFile('foto') ? $foto_produk : $data->foto
+                    ]);
 
                 return redirect()->route('kategori_produk')->with('success', 'Kategori Produk Berhasil Di Rubah');
 
-            } else {
-
-                return redirect()->route('kategori_produk')->withErrors('Kategori tidak dapat di gunakan karna telah tersedia');
-
-            }
+            } 
 
         } else {
 
@@ -99,7 +120,8 @@ class KategoriController extends Controller
     public function hapus_kategori(Request $request, $id_kategori) {
 
         if($request->has('simpan')) {
-
+            $data = DB::table('tbl_kategori')->select('foto')->where('id_kategori', $id_kategori)->first();
+            Storage::delete('public/kategori/'.$data->foto);
             DB::table('tbl_kategori')->where('id_kategori', $id_kategori)->delete();
 
             return redirect()->route('kategori_produk')->with('success', 'Kategori Produk Berhasil Di Hapus');

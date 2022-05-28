@@ -226,7 +226,7 @@
                         <div style="margin-bottom: 10px">
                             <b style="font-weight: bold; margin-top: 10px">Payment Gateway API</b><br/>
                             <small>
-                                untuk mengatur konfigurasi pembayaran otomatis midtrans
+                                untuk mengatur konfigurasi pembayaran otomatis midtrans server
                             </small>
                         </div>
                         <hr>

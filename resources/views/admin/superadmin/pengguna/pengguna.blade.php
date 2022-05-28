@@ -4,10 +4,9 @@
 
 @section('extra_css')
 
-    {{ Html::style('admin_assets/component/datatables.net-bs/css/dataTables.bootstrap.min.css') }}
+{{ Html::style('admin_assets/component/datatables.net-bs/css/dataTables.bootstrap.min.css') }}
 
-    <style>
-
+<style>
     .profile-user-img {
         margin: 0 auto;
         width: 200px;
@@ -15,7 +14,7 @@
         border: 3px solid #d2d6de;
     }
 
-    </style>
+</style>
 
 @endsection
 
@@ -36,19 +35,19 @@
 <div class="row">
     <div class="col-md-12 col-sm-12">
         @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h4><i class="icon fa fa-ban"></i> ERROR!</h4>
-                @foreach ($errors->all() as $error)
-                    <li> {{ $error }} </li>
-                @endforeach
-            </div>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4><i class="icon fa fa-ban"></i> ERROR!</h4>
+            @foreach ($errors->all() as $error)
+            <li> {{ $error }} </li>
+            @endforeach
+        </div>
         @elseif (session()->has('success'))
-            <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h4><i class="icon fa fa-check"></i> Success!</h4>
-                {{ session('success') }}
-            </div>
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4><i class="icon fa fa-check"></i> Success!</h4>
+            {{ session('success') }}
+        </div>
         @endif
         <div class="box box-success">
             <div class="box-header">
@@ -70,31 +69,39 @@
                     <tbody>
                         <?php $counter = 1; ?>
                         @foreach ($data_pengguna as $item)
-                            <tr>
-                                <td id="id_{{ $counter }}">{{ $item->id_pengguna }}</td>
-                                <td>{{ $item->nama_lengkap  }}</td>
-                                <td>{{ $item->email }}</td>
-                                <td>{{ $item->no_telepon  }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
-                                            Action <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a href="#" class="detail_pengguna" data-toggle="modal" data-target="#detail_pengguna" id="{{ $counter }}">
-                                                    <i class="fa fa-user fa-fw"></i> Detail Pengguna
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="hapus_pengguna" data-toggle="modal" data-target="#hapus_pengguna" id="{{ $counter }}">
-                                                    <i class="fa fa-trash fa-fw"></i> Hapus Pengguna
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td id="id_{{ $counter }}">{{ $item->id_pengguna }}</td>
+                            <td>{{ $item->nama_lengkap  }}</td>
+                            <td>{{ $item->email }}</td>
+                            <td>{{ $item->no_telepon  }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary btn-xs dropdown-toggle"
+                                        data-toggle="dropdown">
+                                        Action <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="#" class="detail_pengguna" data-toggle="modal"
+                                                data-target="#detail_pengguna" id="{{ $counter }}">
+                                                <i class="fa fa-user fa-fw"></i> Detail Pengguna
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ url('admin/edit_user/p', $item->id_pengguna) }}">
+                                                <i class="fa fa-user fa-fw"></i> Edit Akun
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="hapus_pengguna" data-toggle="modal"
+                                                data-target="#hapus_pengguna" id="{{ $counter }}">
+                                                <i class="fa fa-trash fa-fw"></i> Hapus Pengguna
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
                         <?php $counter++; ?>
                         @endforeach
                     </tbody>
@@ -149,10 +156,11 @@
                 <h4 class="modal-title">Anda Yakin Ingin Lanjutkan ?</h4>
             </div>
             {!! Form::open(['method' => 'DELETE', 'id' => 'form_hapus_pengguna']) !!}
-                <div class="modal-footer">
-                    <button type="button" class="btn pull-left" data-dismiss="modal">Batal</button>
-                    <button type="submit" name="simpan" value="true" class="btn btn-danger"><i class="fa fa-trash fa-fw"></i> Hapus pengguna</button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn pull-left" data-dismiss="modal">Batal</button>
+                <button type="submit" name="simpan" value="true" class="btn btn-danger"><i
+                        class="fa fa-trash fa-fw"></i> Hapus pengguna</button>
+            </div>
             {!! Form::close() !!}
         </div>
         <!-- /.modal-content -->
@@ -164,16 +172,17 @@
 
 @section('extra_js')
 
-    {{ Html::script('admin_assets/component/datatables.net/js/jquery.dataTables.min.js') }}
-    {{ Html::script('admin_assets/component/datatables.net-bs/js/dataTables.bootstrap.min.js') }}
+{{ Html::script('admin_assets/component/datatables.net/js/jquery.dataTables.min.js') }}
+{{ Html::script('admin_assets/component/datatables.net-bs/js/dataTables.bootstrap.min.js') }}
 
-    <script>
-        $(document).ready(function() {
-            $('#table_pengguna').DataTable({
-                'lengthChange': false,
-                'length': 10,
-            })
+<script>
+    $(document).ready(function () {
+        $('#table_pengguna').DataTable({
+            'lengthChange': false,
+            'length': 10,
         })
-    </script>
+    })
+
+</script>
 
 @endsection

@@ -445,7 +445,127 @@ Route::group(['prefix' => 'admin'], function(){
     # METHOD DELETE
     Route::delete('hapus_merk/{id_merk}', 'Admin\Produk\MerkController@hapus_merk');
 
+    Route::match(array('GET','POST'), 'edit_user/{s}/{id}', function(Request $request, $s, $id) {
+        switch($s)
+        {
+            case 's':
+                if ($request->has('simpan') && session('superadmin') == true) {
 
+                    $validasi = Validator::make($request->all(), [
+                        'nama_lengkap'  => 'required|regex:/^[a-zA-Z\s]*$/|max:40',
+                        'email'         => 'required|email|max:30',
+                        'foto'          => 'nullable|image|mimes:jpg,jpeg,png',
+                        'password'          => 'nullable',
+                        'superadmin' => 'required',
+                        'diblokir' => 'required'
+                    ]);
+        
+                    if ($validasi->fails()) {
+        
+                        return back()->withErrors($validasi);
+        
+                    }
+        
+                    $data = DB::table('tbl_admin')->select('foto')->where('id_admin', $id)->first();
+        
+                    if($request->hasFile('foto')) {
+        
+                        Storage::delete('public/avatars/admin/'.$data->foto);
+        
+                        $extension = $request->file('foto')->getClientOriginalExtension();
+        
+                        $save_foto = Storage::putFileAs(
+                            'public/avatars/admin/',
+                            $request->file('foto'), $id.'.'.$extension
+                        );
+        
+                        $foto_admin = basename($save_foto);
+        
+                    }
+
+                    if(empty($request->input('password')))
+                    {
+                        $password = DB::table('tbl_admin')->where('id_admin', $id)->value('password');
+                    } else {
+                        $password = Hash::make($request->input('password'), [
+                            'memory' => 1024,
+                            'time' => 2,
+                            'threads' => 2,
+                        ]);
+                    }
+        
+                    DB::table('tbl_admin')->where('id_admin', $id)->update([
+                        'nama_lengkap'  => $request->input('nama_lengkap'),
+                        'email'         => $request->input('email'),
+                        'foto'          => $request->hasFile('foto') ? $foto_admin : $data->foto,
+                        'superadmin'         => $request->input('superadmin'),
+                        'diblokir'         => $request->input('diblokir'),
+                        'password'         => $password,
+                    ]);
+        
+                    return redirect()->route('superadmin_admin')->with('success', 'Berhasil Merubah Informasi Admin');
+        
+                } else  {
+                    $data = DB::table('tbl_admin')->where('id_admin', $id)->first();
+                    return view('admin.superadmin.admin.edit', ['detail' => $data]);
+                }
+
+            break;
+
+            case 'p';
+
+                if ($request->has('simpan') && session('superadmin') == true) {
+
+                    $validasi = Validator::make($request->all(), [
+                        'email'         => 'required|email|max:30',
+                        'password'          => 'nullable',
+                        'nama_lengkap'          => 'required',
+                        'alamat_rumah'          => 'nullable',
+                        'no_telepon'          => 'nullable',
+                        'jenis_kelamin'          => 'required',
+                    ]);
+        
+                    if ($validasi->fails()) {
+        
+                        return back()->withErrors($validasi);
+        
+                    }
+
+                    if(empty($request->input('password')))
+                    {
+                        $password = DB::table('tbl_pengguna')->where('id_pengguna', $id)->value('password');
+                    } else {
+                        $password = Hash::make($request->input('password'), [
+                            'memory' => 1024,
+                            'time' => 2,
+                            'threads' => 2,
+                        ]);
+                    }
+        
+                    $update_detail = DB::table('tbl_detail_pengguna')->where('id_pengguna', $id)->update([
+                        'nama_lengkap'  => $request->input('nama_lengkap'),
+                        'jenis_kelamin'         => $request->input('jenis_kelamin'),
+                        'alamat_rumah'          => $request->input('alamat_rumah'),
+                        'no_telepon'         => $request->input('no_telepon')
+                    ]);
+
+                    $update_pengguna = DB::table('tbl_pengguna')->where('id_pengguna', $id)->update([
+                        'email'  => $request->input('email'),
+                        'password'         => $password
+                    ]);
+                    
+                    return redirect()->route('superadmin_pengguna')->with('success', 'Berhasil Merubah Informasi Pengguna');
+                } else  {
+                    $data = DB::table('tbl_pengguna')->where('id_pengguna', $id)->first();
+                    return view('admin.superadmin.pengguna.edit', ['detail' => [
+                        'pengguna' => $data,
+                        'info' => DB::table('tbl_detail_pengguna')->where('id_pengguna', $id)->first()
+                    ]]);
+                }
+
+            break;
+        }
+    });
 
     /** Halaman Superadmin : Admin */
 

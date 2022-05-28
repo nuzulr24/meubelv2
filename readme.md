@@ -1,20 +1,25 @@
-## PROJECT TUGAS YOAYO STORE (Finished)
- - Halaman Admin Progress `100%`
- - Halaman Pengguna Progress `100%`
+## PROJECT SEMESTER (On Progress)
+ - Halaman Admin Progress `80%`
+ - Halaman Pengguna Progress `70%`
 
 ## Cara Installasi
  - Pastikan GIT sudah terinstall dan siap pakai.
- - Clone repository ini dengan link `https://github.com/miqbal97/yoayo-store.git`
+ - Clone repository ini dengan link `https://github.com/nuzulr24/meubelv2`
  - Buka CMD atau Terminal dan pastikan sudah terinstall composer
  - Ketik `composer install` dan tekan Enter.
+ - Silahkan buat file `.env` dan ubah dengan database serta lakukan di cmd ketik dengan `php artisan key:generate` lalu `php artisan config:cache`.
+ - Ketika `php artisan storage:link` agar file public dapat diakses.
+ - Test website dengan ketik di cmd `php artisan serve`.
 
-## Demo User
-`Pastikan Database Sudah Di Update Sesuai Yang Ada Di Repository`
+## Database
+`Pastikan Database Sudah Di Update Sesuai Yang Ada Di Repository` dengan import database yang ada pada folder file sql
 
 ## Halaman Pengguna
- - User = miqbal.pengguna@email.com
- - Pass = pengguna123
+url: 127.0.0.1:8000
+email: maulana.pengguna@email.com
+pass: pengguna123
 
 ## Halaman Admin
- - User = miqbal.admin@email.com
- - Pass = admin123
+url: 127.0.0.1:8000/admin
+email: nuzul.admin@email.com
+pass: admin123

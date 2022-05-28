@@ -263,6 +263,34 @@ class PengaturanController extends Controller
                     return back()->withErrors('Rekening tidak dapat ditambahkan karena telah ada');
                 }
             break;
+
+            case 5;
+
+            $validasi = Validator::make($request->all(), [
+                'atas_nama' => 'required',
+                'nomer_rekening' => 'required|integer',
+                'id_bank' => 'required|integer',
+                'is_active' => 'integer',
+            ]);
+
+            if ($validasi->fails()) {
+
+                return back()->withErrors($validasi);
+
+            }
+            
+            DB::table('tbl_rekening')->where('id', $request->input('id_rekening'))
+            ->update([
+                'is_active' => $request->input('is_active'),
+                'atas_nama' => $request->input('atas_nama'),
+                'nomer_rekening' => $request->input('nomer_rekening'),
+                'id_bank' => $request->input('id_bank'),
+            ]);
+
+            // dd($request->input());
+            return redirect()->route('pengaturan')->with('success', 'Data rekening Berhasil Di Rubah');
+
+            break;
         }
     }
 
@@ -270,42 +298,18 @@ class PengaturanController extends Controller
     {
         if($request->session()->exists('email_admin') && session('superadmin') == true)
         {
-            if($request->has('simpan'))
+
+            if(DB::table('tbl_rekening')->where('id',$id_rekening)->exists() == true)
             {
-                $validasi = Validator::make($request->all(), [
-                    'atas_nama' => 'required',
-                    'nomer_rekening' => 'required|integer',
-                    'id_bank' => 'required|integer',
-                    'is_active' => 'required|integer',
-                ]);
-    
-                if ($validasi->fails()) {
-    
-                    return back()->withErrors($validasi);
-    
-                }
-                
-                $update = DB::table('tbl_rekening')->where('id', $id_rekening)
-                        ->update([
-                            'is_active' => $request->input('is_active'),
-                            'atas_nama' => $request->input('atas_nama'),
-                            'nomer_rekening' => $request->input('nomer_rekening'),
-                            'id_bank' => $request->input('id_bank'),
-                        ]);
-    
-                // dd($update_server);
-                
-                if($update == 0) {
-                    return redirect()->route('pengaturan')->with('success', 'Data rekening Berhasil Di Rubah');
-                } else {
-                    return redirect()->route('pengaturan')->withErrors('Data rekening tidak dapat diperbarui');
-                }
-            } else {
                 return view('admin.pengaturan.edit_rekening', [
                     'detail' => DB::table('tbl_rekening')->where('id', $id_rekening)->get()[0],
                     'rekening' => DB::table('tbl_rekeningbank')->get()
                 ]);
+            } else {
+                return redirect()->route('pengaturan')->withErrors('Tidak ditemukan data rekening pada id tersebut');
             }
+
+            // 
         } else {
             return redirect()->route('login_admin');
         }

@@ -101,6 +101,11 @@
                                                     <i class="fa fa-user fa-fw"></i> Detail Akun
                                                 </a>
                                             </li>
+                                            <li>
+                                                <a href="{{ url('admin/edit_user/s', $item->id_admin) }}">
+                                                    <i class="fa fa-user fa-fw"></i> Edit Akun
+                                                </a>
+                                            </li>
                                             @if(session('id_admin') != $item->id_admin)
                                             <li>
                                                 <a href="#" class="hapus_admin" data-toggle="modal" data-target="#hapus_admin" id="{{ $counter }}">
