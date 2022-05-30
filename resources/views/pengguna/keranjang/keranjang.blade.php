@@ -150,29 +150,7 @@
                             </div>
                         </div>
                         <hr class="border">
-                        @if($warning == true)
-                            {{ Form::open() }}
-                        @else
-                            {{ Form::open(['route' => 'checkout_method']) }}
-                        @endif
-                        <div class="row mb-5">
-                            <div class="col-md-12 form-group">
-                                <label for="inp_alamat" class="text-black h5">Pilih Alamat</label>
-                                <select id="inp_alamat" class="form-control" name="pilih_alamat">
-                                    <option selected="selected" value>Pilih Alamat...</option>
-                                    @if($alamat->first()->alamat_rumah != NULL)
-                                    <option value="1">Kirim Ke Alamat Sendiri</option>
-                                    @endif
-                                    <option value="2">Kirim Ke Alamat Lain</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button @if($warning == true) type="button" @else type="submit" @endif name="simpan" value="true" class="btn btn-primary btn-lg py-3 btn-block">Proses Checkout</button>
-                            </div>
-                        </div>
-                        {{ Form::close() }}
+                        <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg py-3 btn-block">Proses Checkout</a>
                     </div>
                 </div>
             </div>

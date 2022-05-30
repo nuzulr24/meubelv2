@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>YoayoStore &mdash; @yield('title')</title>
+        <title>{{ DB::table('tbl_website')->where('id', 1)->value('value') }} &mdash; @yield('title')</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         @include('pengguna.elemen.static_css')
@@ -30,9 +30,21 @@
                             </div>
 
                             <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
-                                <div class="site-logo">
-                                    <a href="{{ route('beranda') }}" class="js-logo-clone">YoayoStore</a>
-                                </div>
+                                <?php
+                                    if(empty(DB::table('tbl_website')->where('id', 13)->value('value'))) {
+                                        $name = DB::table('tbl_website')->where('id', 1)->value('value');
+                                ?>
+                                    <div class="site-logo">
+                                        <a href="{{ route('beranda') }}" class="js-logo-clone">{{ $name }}</a>
+                                    </div>
+                                <?php } else { 
+                                        $name = DB::table('tbl_website')->where('id', 13)->value('value');
+                                        $alt_name = DB::table('tbl_website')->where('id', 1)->value('value');
+                                ?>
+                                    <div>
+                                        <a href="{{ route('beranda') }}"><img style="width: 255px" src="<?= Storage::url("images/" . $name) ?>" alt="<?= $alt_name ?>"/></a>
+                                    </div>
+                                <?php } ?>
                             </div>
 
                             @if(session('email_pengguna'))
@@ -86,12 +98,12 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <input type="text" name="nama" class="form-control" placeholder="Nama Pengguna">
+                                        <input type="text" name="nama" class="form-control" placeholder="Nama Panggilan">
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-lg-6">
                                     <div class="form-group">
-                                        <input type="email" name="email" class="form-control" placeholder="Email Pengguna">
+                                        <input type="email" name="email" class="form-control" placeholder="Alamat Email">
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-lg-12">
@@ -116,9 +128,9 @@
                             <div class="block-5 mb-5">
                                 <h3 class="footer-heading mb-4">Info Kontak</h3>
                                 <ul class="list-unstyled">
-                                    <li class="address">Universitas BSI, Gedung D2, Margonda Depok.</li>
-                                    <li class="phone"><a href="tel://+6212345678910">+62 123 4567 8910</a></li>
-                                    <li class="email">devs@yoayostore.com</li>
+                                    <li class="address">{{ getContact()['address'] }}</li>
+                                    <li class="phone"><a href="tel://{{ getContact()['phone'] }}">{{ getContact()['phone'] }}</a></li>
+                                    <li class="email">{{ getContact()['email'] }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -126,7 +138,7 @@
                                 <div class="block-5 mb-5">
                                     <h3 class="footer-heading mb-4">Tentang Kami</h3>
                                     <p class="text-justify">
-                                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Commodi dolor fugit laudantium velit voluptatibus voluptas, voluptates et quia similique tempora cum temporibus culpa pariatur molestiae, provident, aspernatur animi ad magnam.
+                                    {{ nl2br(getContact()['short']) }}
                                     </p>
                                 </div>
                             </div>

@@ -14,7 +14,7 @@ use GuzzleHttp\Exception\RequestException;
 
 class CheckoutController extends Controller
 {
-    public function index(Request $request, $method) {
+    public function index(Request $request) {
 
         if (session()->has('email_pengguna')) {
 
@@ -22,26 +22,16 @@ class CheckoutController extends Controller
                 ->join('tbl_barang as barang', 'barang.id_barang', 'keranjang.id_barang')
                 ->where('keranjang.id_pengguna', session('id_pengguna'));
 
+            $data_user = DB::table('tbl_pengguna as pengguna')
+                ->join('tbl_detail_pengguna as detail_pengguna', 'detail_pengguna.id_pengguna', 'pengguna.id_pengguna')
+                ->where('pengguna.id_pengguna', session('id_pengguna'));
+
             if($data->exists()) {
 
-                $d_method = Crypt::decrypt($method);
-
-                if($d_method == "1") {
-
-                    $detail_pengirim = DB::table('tbl_detail_pengguna')->where('id_pengguna', session('id_pengguna'))->first();
-
-                    return view('pengguna.keranjang.checkout', [
-                        'data_checkout' => $data->get(),
-                        'default'       => $detail_pengirim
-                    ]);
-
-                } else if ($d_method == "2") {
-
-                    return view('pengguna.keranjang.checkout', [
-                        'data_checkout' => $data->get()
-                    ]);
-
-                }
+                return view('pengguna.keranjang.checkout', [
+                    'data_checkout' => $data->get(),
+                    'personal' => $data_user->get()->first()
+                ]);
 
             }
 

@@ -104,14 +104,10 @@ Route::put('keranjang/update/{id_barang}', 'Pengguna\Keranjang\KeranjangControll
 # METHOD DELETE
 Route::delete('keranjang/delete/{id_barang}', 'Pengguna\Keranjang\KeranjangController@delete')->name('delete_keranjang');
 
-# METHOD POST
-Route::post('keranjang/method', 'Pengguna\Keranjang\KeranjangController@method')->name('checkout_method');
-
-
 /** Halaman Checkout */
 
 # METHOD GET
-Route::get('checkout/{method}', 'Pengguna\Keranjang\CheckoutController@index')->name('checkout_keranjang');
+Route::get('checkout', 'Pengguna\Keranjang\CheckoutController@index')->name('checkout');
 Route::get('selesai', function(){
     return view('pengguna.keranjang.terimakasih');
 });
@@ -135,6 +131,16 @@ Route::get('get_provinsi', function() {
 
     return response()->json($result);
 });
+
+Route::get('get_kurir', function() {
+    foreach(DB::table('tbl_kurir')->get() as $kr){
+        $kurir = explode("|", DB::table('tbl_website')->where('id', 19)->value('value'));
+        if(in_array($kr->id, $kurir)){
+            echo '<option value="'.$kr->rajaongkir.'">'.$kr->nama.'</option>';
+        }
+    }
+});
+
 Route::get('get_kota', function(Request $request) {
     $curl = curl_init();
 
@@ -183,6 +189,42 @@ Route::post('get_cost', function(Request $request) {
     $result = curl_exec($curl);
 
     return response()->json($result);
+});
+
+Route::get('get_layanan', function(Request $request) {
+    $curl = curl_init();
+
+    $id_city     = DB::table('tbl_kecamatan')->where('id', $request->input('id_kec'))->value('rajaongkir');
+    
+    $kurir     = $request->input('id_kurir');
+    $berat       = $request->input('berat');
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://bukuwarung.com/wp-admin/admin-ajax.php',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => array(
+            'action' => 'post_cost',
+            'origin' => DB::table('tbl_website')->where('id', 18)->value('value'),
+            'originType' => 'city',
+            'destination' => $id_city,
+            'destinationType' => 'subdistrict',
+            'weight' => $berat,
+            'courier' => $kurir
+        ),
+    ));
+
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    return response()->json($response);
 });
 
 Route::post('checkout', 'Pengguna\Keranjang\CheckoutController@save_checkout')->name('save_checkout');

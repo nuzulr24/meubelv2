@@ -50,96 +50,106 @@
             <div class="col-md-6 mb-5 mb-md-0">
                 <h2 class="h3 mb-3 text-black">Detail Pengiriman</h2>
                 <div class="p-3 p-lg-5 border">
+                    <div class="mb-4">
+                        <h5 class="text-black mb-3">Pilih Alamat Pengiriman</h5>
+                        <select class="form-control" name="alamat" id="select_alamat">
+                            <option value="">Pilih Alamat</option>
+                            <option value="1">Gunakan Alamat Pribadi</option>
+                            <option value="2">+ Atur Alamat Baru</option>
+                        </select>
+                    </div>
+                    <div id="personal_form" class="mt-3 d-none">
+                        <div class="alert alert-primary">
+                            <?php
+                                $get_kecamatan = DB::table('tbl_kecamatan')->where('id', $personal->id_kecamatan)->first();
+                                $get_kabupaten = DB::table('tbl_kabupaten')->where('id', $get_kecamatan->idkab)->first();
+                                $get_provinsi = DB::table('tbl_provinsi')->where('id', $get_kabupaten->idprov)->first();
 
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <h5 class="text-black">Informasi Penerima</h5>
+                                $name_kab = $get_kabupaten->tipe === "Kabupaten" ? 'Kabupaten ' . $get_kabupaten->nama : 'Kota ' . $get_kabupaten->nama;
+                                $name_prov = 'Prov. ' . $get_provinsi->nama;
+                                $name_kec = $get_kecamatan->nama;
+                            ?>
+                            - Nama Lengkap : {{ $personal->nama_lengkap }}<br>
+                            - Alamat Lengkap : {{ $personal->alamat_rumah }}<br>
+                            - Nomer Telepon : {{ $personal->no_telepon }}<br>
+                            - Tambahan : {{ 'Kec. ' . $name_kec . ', ' . $name_kab . ', ' . $name_prov}}<br>
                         </div>
-                        <div class="col-md-12">
-                            <label for="inp_nama_penerima" class="text-black">Nama Lengkap <span class="text-danger">*</span></label>
-                            {{ Form::text('nama_penerima', !empty($default) ?  $default->nama_lengkap : null, [
-                                'class'         => 'form-control',
-                                'id'            => 'inp_nama_penerima',
-                                'placeholder'   => 'Nama Penerima'
-                            ]) }}
+                        <input type="hidden" name="id_kec" id="id_kec" value="{{ $get_kecamatan->id }}">
+                        <input type="hidden" name="alamat" value="1">
+                    </div>
+                    <div id="manual_form" class="mt-3 d-none">
+                        <div class="form-group row">
+                            <div class="col-md-12 mb-2">
+                                <h5 class="text-black">Informasi Penerima</h5>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="inp_nama_penerima" class="text-black">Nama Lengkap <span class="text-danger">*</span></label>
+                                {{ Form::text('nama_penerima', !empty($default) ?  $default->nama_lengkap : null, [
+                                    'class'         => 'form-control',
+                                    'id'            => 'inp_nama_penerima',
+                                    'placeholder'   => 'Nama Penerima'
+                                ]) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="inp_no_telepon" class="text-black">No Telepon <span class="text-danger">*</span></label>
+                                {{ Form::text('no_telepon', !empty($default) ?  $default->no_telepon : null, [
+                                    'class'         => 'form-control',
+                                    'id'            => 'inp_no_telepon',
+                                    'placeholder'   => 'No. Telepon Penerima'
+                                ]) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="inp_alamat_tujuan" class="text-black">Alamat <span class="text-danger">*</span></label>
+                                {{ Form::textarea('alamat_tujuan', !empty($default) ?  $default->alamat_rumah : null, [
+                                    'class'         => 'form-control',
+                                    'id'            => 'inp_alamat_tujuan',
+                                    'rows'          => '5',
+                                    'placeholder'   => 'Tulis Alamat Tujuan'
+                                ]) }}
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <div class="col-md-12 mb-2">
+                                <h5 class="text-black">Pilih Tujuan Pengiriman</h5>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="inp_provinsi" class="text-black">Provinsi</label>
+                                <select class="form-control" name="provinsi" id="inp_provinsi"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="inp_kota" class="text-black">Kota</label>
+                                <select class="form-control" name="kota" id="inp_kota"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="inp_provinsi" class="text-black">Kecamatan</label>
+                                <select class="form-control" name="kecamatan" id="inp_provinsi"></select>
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <div class="col-md-12">
-                            <label for="inp_no_telepon" class="text-black">No Telepon <span class="text-danger">*</span></label>
-                            {{ Form::text('no_telepon', !empty($default) ?  $default->no_telepon : null, [
-                                'class'         => 'form-control',
-                                'id'            => 'inp_no_telepon',
-                                'placeholder'   => 'No. Telepon Penerima'
-                            ]) }}
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <label for="inp_alamat_tujuan" class="text-black">Alamat <span class="text-danger">*</span></label>
-                            {{ Form::textarea('alamat_tujuan', !empty($default) ?  $default->alamat_rumah : null, [
-                                'class'         => 'form-control',
-                                'id'            => 'inp_alamat_tujuan',
-                                'rows'          => '5',
-                                'placeholder'   => 'Tulis Alamat Tujuan'
-                            ]) }}
-                        </div>
-                    </div>
-
-
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <h5 class="text-black">Pilih Tujuan Pengiriman</h5>
+                        <div class="col-md-12 mb-2">
+                            <h5 class="text-black">Atur Jasa Pengiriman</h5>
                         </div>
                         <div class="col-md-6">
-                            <label for="inp_provinsi" class="text-black">Provinsi</label>
-                            <select class="form-control" name="provinsi" id="inp_provinsi"></select>
+                            <select class="form-control" name="kurir" id="kurir"></select>
                         </div>
                         <div class="col-md-6">
-                            <label for="inp_kota" class="text-black">Kota</label>
-                            <select class="form-control" name="kota" id="inp_kota"></select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <label for="inp_layanan" class="text-black">Service</label>
-                            <select class="form-control" name="layanan" id="inp_layanan"></select>
-                            <input type="hidden" name="service">
-                            <input type="hidden" name="destinasi">
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <h5 class="text-black">Informasi Transfer Bank</h5>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="inp_bank" class="text-black">Nama Bank</label>
-                            <select class="form-control" name="bank" id="bank">
-                                <option value>Pilih Bank...</option>
-                                <option value="Mandiri">Mandiri</option>
-                                <option value="BCA">BCA</option>
-                                <option value="MEGA">MEGA</option>
-                                <option value="BNI">BNI</option>
-                                <option value="BRI">BRI</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="inp_atas_nama" class="text-black">Atas Nama</label>
-                            <input type="text" name="atas_nama" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="inp_atas_nama" class="text-black">No. Rekening</label>
-                            <input type="text" name="no_rekening" class="form-control">
+                            <select class="form-control" name="layanan" id="layanan"></select>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="inp_keterangan" class="text-black">Catatan Pengiriman ( Optional )</label>
-                        <input type="text" name="keterangan" class="form-control">
+                        <textarea type="text" rows="4" name="keterangan" class="form-control"></textarea>
                     </div>
 
                 </div>
@@ -184,14 +194,46 @@
                                 </tfoot>
                             </table>
 
-                            <div class="border p-3 mb-3">
+                            <div class="row">
+                                <?php if(getSetting()['status_transfer'] == 1){ ?>
+                                <div class="col-md-6">
+                                    <div class="alert text-center text-white align-items-center alert-success bg-success manual" onclick="bayarManual()">
+                                        <i class="cek fa fa-check-circle fs-24"></i>
+                                        <img class="icon" style="width: 150px" src="<?= Storage::url('payment/transfer.png')?>" /><br/>
+                                        Transfer Manual<br/>&nbsp;
+                                    </div>
+                                </div>
+                                <?php } if(getSetting()['status_midtrans'] == 1){ ?>
+                                <div class="col-md-6">
+                                    <div class="alert text-center alert-primary bg-primary text-white align-items-center midtrans" onclick="bayarMidtrans()">
+                                        <i class="cek fa fa-check-circle fs-24"></i>
+                                        <img class="icon" style="width: 150px" src="<?= Storage::url('payment/midtrans.png')?>" /><br/>
+                                        Virtual Account, E-Wallet, Minimarket, dll
+                                    </div>
+                                </div>
+                                <?php } ?>
+                            </div>
+
+                            <div class="border p-3 mb-3 payment-manual d-none">
                                 <h3 class="h6 mb-0"><a class="d-block" data-toggle="collapse" href="#collapsebank" role="button" aria-expanded="false" aria-controls="collapsebank">Transfer Bank</a></h3>
 
                                 <div class="collapse show" id="collapsebank">
                                     <div class="py-2">
                                         <p class="mb-0 text-black">
                                             Silahkan Transfer Ke Rekening Di Bawah :<br>
-                                            {{ Html::image(asset('user_assets/images/mandiri_logo.jpg')) }} 12345678910 a/n nanda nurjanah<br><br>
+                                            <?php
+                                                foreach(DB::table('tbl_rekening')->where('is_active', 1)->get() as $rekening) {
+                                                $detail_rek = DB::table('tbl_rekeningbank')->where('id', $rekening->id_bank)->first();
+                                            ?>
+                                                <div class="my-3 text-black alert alert-info mb-0">
+                                                    <h6><?= $detail_rek->nama ?></h6>
+                                                    <p style="margin-bottom: 0px">
+                                                        - Atas Nama : <?= $rekening->atas_nama ?> <br>
+                                                        - Nomer Rekening : <?= $rekening->nomer_rekening ?> <br>
+                                                        - Kode Bank : <?= $detail_rek->kodebank ?> <br>
+                                                    </p>
+                                                </div>
+                                            <?php } ?>
                                             <small>
                                                 Untuk saat ini kami hanya menggunakan rekening yang tertera di atas, <br>
                                                 jika anda transfer pembayaran selain menggunakan rekening di atas kami tidak bertanggung jawab.
@@ -220,6 +262,51 @@
 <script type="text/javascript">
     $(document).ready(function(){
         var url = 'http://'+window.location.host
+
+        $('#select_alamat').change(function() {
+            let opt = this.value;
+            if(opt == 1) {
+                $('#personal_form').removeClass('d-none');
+                $('#manual_form').addClass('d-none');
+
+                $.get(url+'/get_kurir').done(function(result){
+                    $('#kurir').html(result)
+                })
+
+                $('#kurir').change(function() {
+                    let kurir = this.value;
+                    if(kurir === "cod") {
+                        $('#ongkir').html('Rp. <?= DB::table('tbl_website')->where('id', 17)->value('value') ?>')
+                        $('#layanan').html('')
+                    } else {
+                        $.get(url+'/get_layanan', {'id_kurir': kurir, 'berat': {{ $berat }}, 'id_kec': $('#id_kec').val()}).done(function(result){
+                            if($.parseJSON(result)['rajaongkir']['status']['code'] == 200) {
+                                var data = $.parseJSON(result)['rajaongkir']['results'][0]['costs']
+                                var elemen = '<option value>Pilih Layanan...</option>'
+                                for(var value of data){
+                                    elemen += '<option data-layanan="'+value['service']+'" value="'+value['cost'][0]['value']+'">'+value['service']+' '+value['cost'][0]['etd']+' hari Rp. '+value['cost'][0]['value']+'</option>'
+                                }
+                                $('#layanan').html(elemen)
+
+                                $('#layanan').change(function() {
+                                    let id_layanan = $(this).data('layanan');
+                                    let biaya = this.value;
+                                    $('#ongkir').html(`Rp. ${biaya}`)
+                                });
+
+                            } else {
+                                alert('Terjadi Kesalahan Saat Menghubungi Server')
+                            }
+                        })
+                    }
+                })
+
+            } else if(opt == 2) {
+                $('#personal_form').addClass('d-none');
+                $('#manual_form').removeClass('d-none');
+            }
+        })
+
         $.get(url+'/get_provinsi').done(function(result){
             if($.parseJSON(result)['rajaongkir']['status']['code'] == 200) {
                 var data = $.parseJSON(result)['rajaongkir']['results']
