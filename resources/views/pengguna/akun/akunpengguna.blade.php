@@ -53,12 +53,29 @@
                         @endif
                     </p>
                     <span class="d-block text-primary h6 text-uppercase">No. Telepon</span>
-                    <p class="mb-0">
+                    <p>
                         @if($data_pengguna->no_telepon != NULL)
                             {{ $data_pengguna->no_telepon }}
                         @else
                             <span class="badge badge-warning">No.Telepon Belum Tersedia</span>
                         @endif
+                    </p>
+                    <span class="d-block text-primary h6 text-uppercase">Alamat Tambahan</span>
+                    <p class="mb-0">
+                        <?php
+                            if($data_pengguna->id_kecamatan != NULL) {
+                                $get_kecamatan = DB::table('tbl_kecamatan')->where('id', $data_pengguna->id_kecamatan)->first();
+                                $get_kabupaten = DB::table('tbl_kabupaten')->where('id', $get_kecamatan->idkab)->first();
+                                $get_provinsi = DB::table('tbl_provinsi')->where('id', $get_kabupaten->idprov)->first();
+
+                                $name_kab = $get_kabupaten->tipe === "Kabupaten" ? 'Kabupaten ' . $get_kabupaten->nama : 'Kota ' . $get_kabupaten->nama;
+                                $name_prov = 'Prov. ' . $get_provinsi->nama;
+                                $name_kec = $get_kecamatan->nama;
+                        ?>
+                            {{ 'Kec. ' . $name_kec . ', ' . $name_kab . ', ' . $name_prov}}
+                        <?php } else { ?>
+                            <span class="badge badge-warning">Kecamatan Belum Tersedia</span>
+                        <?php } ?>
                     </p>
                 </div>
             </div>

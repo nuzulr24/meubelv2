@@ -24,7 +24,7 @@
 <div class="row">
     <div class="col-xs-12">
         <h2 class="page-header">
-            <i class="fa fa-shopping-cart fa-fw"></i> <b>Yoayo</b>Store.
+            <i class="fa fa-shopping-cart fa-fw"></i> <b>{{ getContact()['title'] }}</b>
             <small class="pull-right">Tanggal: {{ (new DateTime)->format('Y-m-d') }} </small>
         </h2>
     </div>
@@ -35,21 +35,19 @@
     <div class="col-sm-4 invoice-col">
         From
         <address>
-            <strong>YoayoStore.</strong><br>
-            Universitas BSI Gedung D2,<br>
-            Margonda Depok, Indonesia<br>
-            Phone: (123) 45678910<br>
-            Email: info@yoayostore.com
+            <b>{{ getContact()['title'] }}</b><br>
+            Alamat: {{ getContact()['address'] }}<br>
+            No. Telepon: {{ getContact()['phone'] }}<br>
+            Email: {{ getContact()['email'] }}
         </address>
     </div>
     <!-- /.col -->
     <div class="col-sm-4 invoice-col">
         To
         <address>
-            <strong>{{ $data_pesanan->nama_penerima }}</strong><br>
-            {{ explode('|', $data_pesanan->alamat_tujuan)[0] }}<br>
-            No. Telepon : {{ $data_pesanan->no_telepon }}<br>
-            Destinasi : <strong>{{ explode('|', $data_pesanan->alamat_tujuan)[1] }}</strong>
+            <b>{{ $data_pesanan->nama_penerima }}</b><br>
+            <b>{{ $data_pesanan->alamat_tujuan }}</b><br>
+            <b>{{ formatHandphone($data_pesanan->no_telepon) }}</b><br>
         </address>
     </div>
     <!-- /.col -->

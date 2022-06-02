@@ -27,31 +27,49 @@
             </div>
             <div class="col-md-5 mx-auto">
                 {{ Form::open(['route' => ['save_bukti', $id_pesanan], 'files' => true, 'method' => 'PUT']) }}
-                    <div class="p-3 p-lg-5 border">
-                        @if ($errors->any())
+                <div class="p-3 p-lg-5 border">
+                    @if ($errors->any())
 
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong><i class="icon-ban"></i> ERROR!!</strong><br>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong><i class="icon-ban"></i> ERROR!!</strong><br>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
 
-                        @endif
-                        <div class="form-group">
-                            {{ Form::label('inp_bukti_pembayaran', 'Bukti Pembayaran', ['class' => 'text-black']) }}
-                            {{ Form::file('bukti_pembayaran', ['class' => 'form-control', 'id' => 'inp_bukti_pembayaran', 'style' => 'border: 0;']) }}
-                            <small class="help-block">Pastikan format foto yang di upload : jpg, jpeg, atau png</small>
-                        </div>
-                        <div class="form-group row mt-5">
-                            <div class="col-lg-12">
-                                <button type="submit" name="simpan" value="true" class="btn btn-primary btn-lg btn-block">Upload Bukti</button>
-                            </div>
+                    @endif
+                    <div class="form-group">
+                        {{ Form::label('inp_bukti_pembayaran', 'Bukti Pembayaran', ['class' => 'text-black']) }}
+                        {{ Form::file('bukti_pembayaran', ['class' => 'form-control', 'id' => 'inp_bukti_pembayaran', 'style' => 'border: 0;']) }}
+                        <small class="help-block">Pastikan format foto yang di upload : jpg, jpeg, atau png</small>
+                    </div>
+                    <div class="form-group">
+                        {{ Form::label('exampleEmail1', 'Atas Nama', ['class' => 'text-black']) }}
+                        {{ Form::text('atas_nama', null, ['class' => 'form-control', 'id' => 'atas_nama']) }}
+                    </div>
+                    <div class="form-group">
+                        {{ Form::label('exampleEmail1', 'Nomer Rekening', ['class' => 'text-black']) }}
+                        {{ Form::number('no_rekening', null, ['class' => 'form-control', 'id' => 'no_rekening']) }}
+                    </div>
+                    <div class="form-group">
+                        {{ Form::label('exampleEmail1', 'Dari Bank', ['class' => 'text-black']) }}
+                        <select class="form-control" name="bank">
+                            <option value="">-- pilih salah satu --</option>
+                            <?php foreach(DB::table('tbl_rekeningbank')->get() as $items) { ?>
+                            <option value="<?= $items->nama ?>"><?= $items->nama ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="form-group row mt-5">
+                        <div class="col-lg-12">
+                            <button type="submit" name="simpan" value="true"
+                                class="btn btn-primary btn-lg btn-block">Upload Bukti</button>
                         </div>
                     </div>
+                </div>
                 {{ Form::close() }}
             </div>
         </div>

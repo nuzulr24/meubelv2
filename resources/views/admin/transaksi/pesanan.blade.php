@@ -181,7 +181,7 @@
                                 <td id="id_{{ $counter2 }}">{{ $item->id_pesanan }}</td>
                                 <td>{{ $item->nama_penerima  }}</td>
                                 <td>{{ $item->no_telepon  }}</td>
-                                <td>JNE ({{ $item->layanan }})</td>
+                                <td>{{ strtoupper($item->kurir) }} ({{ $item->kurir === "cod" ? strtoupper($item->kurir_cod) : strtoupper($item->kurir) }})</td>
                                 <td>
                                     <span class="label {{ $stat_label[$item->status_pesanan] }}">
                                         {{ $stat_notif[$item->status_pesanan] }}
@@ -233,6 +233,26 @@
             </div>
             {!! Form::open(['method' => 'PUT', 'id' => 'form_kirim_pesanan']) !!}
                 <div class="modal-body">
+                    <div class="form-group">
+                        {{ Form::label('inp_resi', 'Jenis Ekspedisi') }}
+                        <select class="form-control" name="kurir_cod">
+                            <option value="">-- pilih salah satu --</option>
+                            <?php
+                                foreach(DB::table('tbl_kurir')->get() as $kr){
+                                    $kurir = explode("|", DB::table('tbl_website')->where('id', 19)->value('value'));
+                                    if(in_array($kr->id, $kurir)){
+                                        if($kr->rajaongkir == "cod")
+                                        {
+
+                                        } else {
+                                            echo '<option value="'.$kr->rajaongkir.'">'.$kr->nama.'</option>';
+                                        }
+                                    }
+                                }
+                            ?>
+                        </select>
+                        <p class="small my-2">silahkan pilih expedisi jika paket anda COD.</p>
+                    </div>
                     <div class="form-group">
                         {{ Form::label('inp_resi', 'Input Resi Pesanan') }}
                         {{ Form::text('resi', null, ['id' => 'inp_resi', 'class' => 'form-control']) }}

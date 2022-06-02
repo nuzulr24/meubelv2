@@ -55,12 +55,21 @@
 
             </div>
             <div class="site-blocks-table col-md-12">
-                <div class="alert alert-success">
+                <div class="alert alert-info">
                     <h5>INFO PEMBAYARAN!</h5>
                     <div class="py-2">
                         <p class="mb-0 text-black">
-                            Silahkan Transfer Ke Rekening Di Bawah :<br>
-                            {{ Html::image(asset('user_assets/images/mandiri_logo.jpg')) }} <br> 12345678910 a/n nanda nurjanah<br>
+                            Silahkan Transfer Ke Rekening Di Bawah :<hr>
+                            <?php
+                                $data_bank = DB::table('tbl_rekening')->where('is_active', 1)->get();
+                                foreach($data_bank as $items) {
+                                    $nama_bank = DB::table('tbl_rekeningbank')->where('id', $items->id)->first();
+                            ?>
+                                <b>Nomer Rekening:&nbsp; {{ $items->nomer_rekening }}</b><br>
+                                <b>Atas Nama:&nbsp; {{ $items->atas_nama }}</b><br>
+                                <b>Nama Bank:&nbsp; {{ $nama_bank->nama }} (Kode Bank: {{ $nama_bank->kodebank }})</b>
+                            <?php } ?>
+                            <br>
                             Untuk saat ini kami hanya menggunakan rekening yang tertera di atas, <br>
                             jika anda transfer pembayaran selain rekening di atas kami tidak bertanggung jawab.
                             <hr>
@@ -155,13 +164,13 @@
                                 <tr style="background-color: rgba(108, 117, 125, 0.16)!important;">
                                     <td class="py-2 text-left" colspan="6">
                                         <b>Resi Pengiriman : </b> <code>{{ $item->no_resi }}</code> | Dikirim Pada : {{ $item->tanggal_dikirim }} |
-                                        Layanan Pengiriman : JNE - {{ $item->layanan }}
+                                        Layanan Pengiriman : {{ strtoupper($item->kurir) }} {{ !is_null($item->layanan) ? ' - (' . $item->layanan . ')' : '' }}
                                         @if($item->status_pesanan == 4)
                                         | Diterima Pada : {{ $item->tanggal_diterima }}
                                         @else
                                         <br> <i><small>Jika Barang telah di terima harap konfirmasi pnerimaan pesanan</small></i>
                                         <span class="badge badge-warning"><a href="{{ route('detail_pesanan', ['id_pesanan' => $item->id_pesanan]) }}" class="text-black">Konfirmasi Pesanan</a></span>
-                                        <i><small> | Track Pesanan :  </small></i><span class="badge badge-warning"><a href="https://jne.co.id" target="_blank" class="text-black">Tracking Pesanan</a></span>
+                                        <i><small> | Track Pesanan :  </small></i><span class="badge badge-warning"><a data-kurir="{{ $item->kurir }}" data-resi="{{ $item->no_resi }}" class="text-black cari">Tracking Pesanan</a></span>
                                         <br><code>NOTE:</code>Jika kedapatan masalah saat pengiriman atau ingin mengajukan pembatalan pesanan silahkan hubungi kami pada kontak di bawah.</a>
                                         @endif
                                     </td>
@@ -205,5 +214,44 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('modal')
+<div class="modal fade" id="cariResi">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="judulResi"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body tracking">
+
+      </div>
+    </div>
+  </div>
+</div>
+@endsection
+
+@section('custom_js')
+
+<script>
+    $(document).ready(function () {
+        $('.cari').click(function() {
+            $('#cariResi').modal('show')
+            $.ajax({
+                url: "track/" + $(this).data('resi'),
+                method: "GET",
+                success: function (response) {
+                    $('.tracking').html(response)
+                    $('#judulResi').html('Lacak Pengiriman')
+                },
+            });
+        })
+    })
+
+</script>
 
 @endsection

@@ -31,26 +31,38 @@
                             <div class="card-body row">
                                 <div class="col-md-4">
                                     <b class="text-black">Informasi Pengirim</b><hr>
-                                    <i>From,</i>
-                                    <b>Yoayo</b>Store<br>
-                                    Universitas BSI Gedung D2,<br>
-                                    Margonda Depok, Indonesia<br>
-                                    No. Telepon: (123) 45678910<br>
-                                    Email: info@yoayostore.com
+                                    <i>Dari,</i>
+                                    <b>{{ getContact()['title'] }}</b><br>
+                                    {{ getContact()['address'] }}<br>
+                                    No. Telepon: {{ getContact()['phone'] }}<br>
+                                    Email: {{ getContact()['email'] }}
                                 </div>
                                 <div class="col-md-4">
                                     <b class="text-black">Informasi Penerima</b><hr>
-                                    <i>To,</i>
+                                    <i>Ke,</i>
                                     <b>{{ $data_detail->nama_penerima }}</b><br>
-                                    {{ explode('|', $data_detail->alamat_tujuan)[0] }}<br>
-                                    No. Telepon: {{ $data_detail->no_telepon }}<br>
-                                    Pengiriman : {{ explode('|', $data_detail->alamat_tujuan)[1] }}
+                                    <b>{{ $data_detail->alamat_tujuan }}</b><br>
+                                    <b>{{ formatHandphone($data_detail->no_telepon) }}</b><br>
                                 </div>
                                 <div class="col-md-4">
-                                    <b class="text-black">Informasi Pembayaran</b><hr>
+                                <b class="text-black">Informasi Pembayaran</b><hr>
+                                    <?php 
+                                        if($data_detail->id_methode == 1)
+                                        {
+                                            // dd($data_detail->id_bank_receiver);
+                                            $get_name = DB::table('tbl_rekening')->where('id', $data_detail->id_bank_receiver)->first();
+                                            $inform = [
+                                                'nama_bank' => DB::table('tbl_rekeningbank')->where('id', $get_name->id_bank)->value('nama'),
+                                                'atas_nama' => $get_name->atas_nama,
+                                                'norek' => $get_name->nomer_rekening
+                                            ];
+                                    ?>
                                     <b>ID Pesanan:</b><br>{{ $data_detail->id_pesanan }}<br>
                                     <b>No. Rekening:</b><br> {{ $data_detail->bank.' '.$data_detail->no_rekening.' a/n '.$data_detail->atas_nama }}<br>
                                     <b>Tanggal Upload:</b><br> {{ $data_detail->tanggal_upload }}
+                                    <?php } else { ?>
+
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +106,7 @@
                                 <tr>
                                     <td>Layanan</td>
                                     <td>:</td>
-                                    <td>JNE (YES)</td>
+                                    <td>{{ strtoupper($data_detail->kurir) }} {{ !is_null($data_detail->layanan) ? '('.$data_detail->layanan.')' : '' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Total Berat</td>

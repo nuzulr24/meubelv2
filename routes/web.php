@@ -133,11 +133,77 @@ Route::get('get_provinsi', function() {
 });
 
 Route::get('get_kurir', function() {
+    echo '<option value="">-- pilih expedisi --</option>';
     foreach(DB::table('tbl_kurir')->get() as $kr){
         $kurir = explode("|", DB::table('tbl_website')->where('id', 19)->value('value'));
         if(in_array($kr->id, $kurir)){
             echo '<option value="'.$kr->rajaongkir.'">'.$kr->nama.'</option>';
         }
+    }
+});
+
+Route::get('get_prov', function() {
+    echo '<option value="">-- pilih provinsi --</option>';
+    foreach(DB::table('tbl_provinsi')->get() as $kr){
+        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
+    }
+});
+
+Route::get('get_prov', function() {
+    echo '<option value="">-- pilih provinsi --</option>';
+    foreach(DB::table('tbl_provinsi')->get() as $kr){
+        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
+    }
+});
+
+Route::get('get_city', function(Request $request) {
+    echo '<option value="">-- pilih kota --</option>';
+    foreach(DB::table('tbl_kabupaten')->where('idprov', $request->input('provinsi'))->get() as $kr){
+        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
+    }
+});
+
+Route::get('get_kec', function(Request $request) {
+    echo '<option value="">-- pilih kecamatan --</option>';
+    foreach(DB::table('tbl_kecamatan')->where('idkab', $request->input('kecamatan'))->get() as $kr){
+        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
+        // dd($kr);
+    }
+});
+
+Route::get('track/{id}', function(Request $request, $id)
+{
+    if(empty($id))
+    {
+        echo 'what??';
+    } else {
+        $ids = DB::table('tbl_pesanan')->where('no_resi', $id)->first();
+        $search = DB::table('tbl_pesanan')->where('id_pesanan', $ids->id_pesanan)->first();
+        $curl = curl_init();
+        
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://pluginongkoskirim.com/cek-tarif-ongkir/front/resi-amp',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => [
+                'kurir' => $search->kurir === "cod" ? $search->kurir_cod : $search->kurir,
+                'resi' => $id
+            ],
+        CURLOPT_HTTPHEADER => array(
+            'x-api-key: bGajwpDHrfCn3kFoyet6Ms5hx0qvKQ8SPgcdNVR7',
+            'Cookie: laravel_session=eyJpdiI6Im1FNkkreGpBWUE0cGg3bXZ6amZNMWc9PSIsInZhbHVlIjoiaEJyWCtzRDZ4WkpRcjZDbDBTaDNWc20zd3JvQ0RQbzFhdllBWDF6aVptaXc1TVwvV3RzQmY1c2ZLemdNcE8rQjR0Y2pnXC9kWDdVMGxvWVJYUGxzdmRxUT09IiwibWFjIjoiN2E4YzUzNzA5ZDVkOWY1YjAzODg1ZTlkZmE4NjAxZDczNDFiZDgwN2Q2ZjUyMjFhNWE0ZjRiZTdhY2ViNzYxMyJ9'
+        ),
+        ));
+        
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        return view('pengguna.pesanan.detail_resi', ['detail_resi' => json_decode($response, true), 'invoice' => $search->id_pesanan]);
     }
 });
 

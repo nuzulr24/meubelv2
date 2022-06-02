@@ -40,7 +40,6 @@ class InformasiAkunController extends Controller
                 'alamat_rumah'  => 'required|string',
                 'email'         => 'required|email|max:30',
                 'no_telepon'    => 'required|regex:/^[0-9\s\-\+]*$/|max:20',
-                'password'      => 'required|alpha_num|max:18',
             ]);
 
             if($validasi->fails()) {
@@ -51,11 +50,13 @@ class InformasiAkunController extends Controller
 
             $data = DB::table('tbl_pengguna')->where('id_pengguna', session('id_pengguna'));
 
-            if ($data->exists() && Hash::check($request->input('password'), $data->first()->password)) {
+            if ($data->exists()) {
 
                 $data->update([
                     'email'         =>  $request->input('email'),
                 ]);
+
+                $info_akun = DB::table('tbl_detail_pengguna')->where('id_pengguna', session('id_pengguna'))->first();
 
                 DB::table('tbl_detail_pengguna')
                     ->where('id_pengguna', session('id_pengguna'))
@@ -63,6 +64,7 @@ class InformasiAkunController extends Controller
                         'nama_lengkap'  => $request->input('nama_lengkap'),
                         'jenis_kelamin' => $request->input('jenis_kelamin'),
                         'alamat_rumah'  => $request->input('alamat_rumah'),
+                        'id_kecamatan'  => empty($request->input('kecamatan')) ? $info_akun->id_kecamatan : $request->input('kecamatan'),
                         'no_telepon'    => $request->input('no_telepon'),
                     ]);
 

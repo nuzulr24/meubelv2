@@ -17,7 +17,7 @@ class PengirimanController extends Controller
             $data = DB::table('tbl_pesanan')
                 ->select(
                     'id_pesanan', 'nama_penerima', 'alamat_tujuan', 'layanan', 'tanggal_diterima',
-                    'no_telepon', 'no_resi', 'status_pesanan', 'tanggal_dikirim'
+                    'no_telepon', 'no_resi', 'status_pesanan', 'tanggal_dikirim', 'kurir', 'layanan', 'kurir_cod'
                 )->get();
 
             return view('admin.transaksi.pengiriman', ['data_pengiriman' => $data]);

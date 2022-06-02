@@ -80,11 +80,10 @@
     <!-- accepted payments column -->
     <div class="col-xs-6">
         <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-            <strong>YoayoStore.</strong><br>
-            Universitas BSI Gedung D2,<br>
-            Margonda Depok, Indonesia<br>
-            Phone: (123) 45678910<br>
-            Email: info@yoayostore.com
+            <b>{{ getContact()['title'] }}</b><br>
+            Alamat: {{ getContact()['address'] }}<br>
+            No. Telepon: {{ getContact()['phone'] }}<br>
+            Email: {{ getContact()['email'] }}
         </p>
     </div>
     <!-- /.col -->

@@ -41,6 +41,7 @@ function formatHandphone($nomorhp) {
 function getContact()
 {
     return [
+        'title' => DB::table('tbl_website')->where('id', 1)->value('value'),
         'address' => DB::table('tbl_website')->where('id', 9)->value('value'),
         'phone' =>  formatHandphone(DB::table('tbl_website')->where('id', 10)->value('value')),
         'email' =>  DB::table('tbl_website')->where('id', 11)->value('value'),

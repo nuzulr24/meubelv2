@@ -74,8 +74,6 @@
                             - Nomer Telepon : {{ $personal->no_telepon }}<br>
                             - Tambahan : {{ 'Kec. ' . $name_kec . ', ' . $name_kab . ', ' . $name_prov}}<br>
                         </div>
-                        <input type="hidden" name="id_kec" id="id_kec" value="{{ $get_kecamatan->id }}">
-                        <input type="hidden" name="alamat" value="1">
                     </div>
                     <div id="manual_form" class="mt-3 d-none">
                         <div class="form-group row">
@@ -122,15 +120,15 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="inp_provinsi" class="text-black">Provinsi</label>
-                                <select class="form-control" name="provinsi" id="inp_provinsi"></select>
+                                <select class="form-control" name="provinsi" id="provinsi"></select>
                             </div>
                             <div class="col-md-4">
                                 <label for="inp_kota" class="text-black">Kota</label>
-                                <select class="form-control" name="kota" id="inp_kota"></select>
+                                <select class="form-control" name="kabupaten" id="kabupaten"></select>
                             </div>
                             <div class="col-md-4">
                                 <label for="inp_provinsi" class="text-black">Kecamatan</label>
-                                <select class="form-control" name="kecamatan" id="inp_provinsi"></select>
+                                <select class="form-control" name="kecamatan" id="kecamatan"></select>
                             </div>
                         </div>
                     </div>
@@ -200,7 +198,7 @@
                                     <div class="alert text-center text-white align-items-center alert-success bg-success manual" onclick="bayarManual()">
                                         <i class="cek fa fa-check-circle fs-24"></i>
                                         <img class="icon" style="width: 150px" src="<?= Storage::url('payment/transfer.png')?>" /><br/>
-                                        Transfer Manual<br/>&nbsp;
+                                        Transfer Manual
                                     </div>
                                 </div>
                                 <?php } if(getSetting()['status_midtrans'] == 1){ ?>
@@ -243,7 +241,11 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group d-none btn-transfer">
+                                <input type="hidden" name="id_kec" id="id_kec" value="{{ $get_kecamatan->id }}">
+                                <input type="hidden" name="alamat" id="opsi_alamat">
+                                <input type="hidden" name="ongkir" id="ongkos_kirim">
+                                <input type="hidden" name="metode_pembayaran" id="metode">
                                 <button type="submit" id="simpan" name="simpan" value="true" class="btn btn-primary btn-lg py-3 btn-block">Proses Pesanan</button>
                             </div>
 
@@ -268,6 +270,7 @@
             if(opt == 1) {
                 $('#personal_form').removeClass('d-none');
                 $('#manual_form').addClass('d-none');
+                $('#opsi_alamat').val(1)
 
                 $.get(url+'/get_kurir').done(function(result){
                     $('#kurir').html(result)
@@ -277,6 +280,7 @@
                     let kurir = this.value;
                     if(kurir === "cod") {
                         $('#ongkir').html('Rp. <?= DB::table('tbl_website')->where('id', 17)->value('value') ?>')
+                        $('#ongkos_kirim').val(<?= DB::table('tbl_website')->where('id', 17)->value('value') ?>)
                         $('#layanan').html('')
                     } else {
                         $.get(url+'/get_layanan', {'id_kurir': kurir, 'berat': {{ $berat }}, 'id_kec': $('#id_kec').val()}).done(function(result){
@@ -284,14 +288,16 @@
                                 var data = $.parseJSON(result)['rajaongkir']['results'][0]['costs']
                                 var elemen = '<option value>Pilih Layanan...</option>'
                                 for(var value of data){
-                                    elemen += '<option data-layanan="'+value['service']+'" value="'+value['cost'][0]['value']+'">'+value['service']+' '+value['cost'][0]['etd']+' hari Rp. '+value['cost'][0]['value']+'</option>'
+                                    elemen += '<option value="'+value['cost'][0]['value']+','+value['service']+'">'+value['service']+' '+value['cost'][0]['etd']+' hari Rp. '+value['cost'][0]['value']+'</option>'
                                 }
                                 $('#layanan').html(elemen)
 
                                 $('#layanan').change(function() {
-                                    let id_layanan = $(this).data('layanan');
-                                    let biaya = this.value;
-                                    $('#ongkir').html(`Rp. ${biaya}`)
+                                    let values = this.value;
+                                    let extract = values.split(',');
+                                    let ongkirs = extract[0];
+                                    $('#ongkir').html(`Rp. ${ongkirs}`)
+                                    $('#ongkos_kirim').val(ongkirs)
                                 });
 
                             } else {
@@ -304,19 +310,70 @@
             } else if(opt == 2) {
                 $('#personal_form').addClass('d-none');
                 $('#manual_form').removeClass('d-none');
-            }
-        })
+                $('#opsi_alamat').val(2)
 
-        $.get(url+'/get_provinsi').done(function(result){
-            if($.parseJSON(result)['rajaongkir']['status']['code'] == 200) {
-                var data = $.parseJSON(result)['rajaongkir']['results']
-                var elemen = '<option value>Pilih Provinsi...</option>'
-                for(var value of data){
-                    elemen += '<option value="'+value['province_id']+'">'+value['province']+'</option>'
-                }
-                $('select#inp_provinsi').append(elemen)
-            } else {
-                alert('Terjadi Kesalahan Saat Menghubungi Server')
+                $('#kurir').html('');
+
+                $.get(url+'/get_prov').done(function(result){
+                    $('select#provinsi').html(result)
+
+                    $('#provinsi').change(function() {
+                        let id_prov = this.value;
+                        $.get(url+'/get_city?provinsi', {'provinsi': id_prov}).done(function(result){
+                            $('select#kabupaten').html(result)
+
+                            $('#kabupaten').change(function() {
+                                let id_kab = this.value;
+                                $.get(url+'/get_kec?kecamatan', {'kecamatan': id_kab}).done(function(result){
+                                    $('select#kecamatan').html(result)
+
+                                    $('#kecamatan').change(function() {
+                                        let id_kec = this.value;
+                                        $('#id_kec').val(id_kec);
+
+                                        $.get(url+'/get_kurir').done(function(result){
+                                            $('#kurir').html(result)
+
+                                            $('#kurir').change(function() {
+                                            let kurir = this.value;
+                                            if(kurir === "cod") {
+                                                $('#ongkir').html('Rp. <?= DB::table('tbl_website')->where('id', 17)->value('value') ?>')
+                                                $('#ongkos_kirim').val(<?= DB::table('tbl_website')->where('id', 17)->value('value') ?>)
+                                                $('#layanan').html('')
+                                            } else {
+                                                $.get(url+'/get_layanan', {'id_kurir': kurir, 'berat': {{ $berat }}, 'id_kec': $('#id_kec').val()}).done(function(result){
+                                                    if($.parseJSON(result)['rajaongkir']['status']['code'] == 200) {
+                                                        var data = $.parseJSON(result)['rajaongkir']['results'][0]['costs']
+                                                        var elemen = '<option value>Pilih Layanan...</option>'
+                                                        for(var value of data){
+                                                            elemen += '<option value="'+value['cost'][0]['value']+','+value['service']+'">'+value['service']+' '+value['cost'][0]['etd']+' hari Rp. '+value['cost'][0]['value']+'</option>'
+                                                        }
+                                                        $('#layanan').html(elemen)
+
+                                                        $('#layanan').change(function() {
+                                                            let values = this.value;
+                                                            let extract = values.split(',');
+                                                            let ongkirs = extract[0];
+                                                            $('#ongkir').html(`Rp. ${ongkirs}`)
+                                                            $('#ongkos_kirim').val(ongkirs)
+                                                        });
+
+                                                    } else {
+                                                        alert('Terjadi Kesalahan Saat Menghubungi Server')
+                                                    }
+                                                })
+                                            }
+                                        })
+
+                                        })
+
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+
             }
         })
         $('#inp_provinsi').click(() => {
@@ -325,7 +382,7 @@
                 if($.parseJSON(result)['rajaongkir']['status']['code'] == 200) {
                     var data = $.parseJSON(result)['rajaongkir']['results']
                     var elemen = '<option value>Pilih Kota...</option>'
-                    $('#inp_kota').html(' ')
+                    $('#inp_kota').html('')
                     for(var value of data){
                         if(value['type'] == "Kota") {
                             elemen += '<option value="'+value['city_id']+'">Kota. '+value['city_name']+'</option>'
@@ -369,5 +426,11 @@
             )
         })
     })
+
+    function bayarManual()
+    {
+        $('.btn-transfer').removeClass('d-none');
+        $('#metode').val(1)
+    }
 </script>
 @endsection

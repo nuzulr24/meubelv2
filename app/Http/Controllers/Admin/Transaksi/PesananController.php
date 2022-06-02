@@ -187,6 +187,7 @@ class PesananController extends Controller
             if($status <= 3 && $status > 1) {
 
                 $data->update([
+                    'kurir_cod'         => $status == 2 ? $request->input('kurir_cod') : NULL,
                     'no_resi'           => $status == 2 ? $request->input('resi') : NULL,
                     'status_pesanan'    => $status == 2 ? 3 : 2,
                     'tanggal_dikirim'   => $status == 2 ? (new DateTime)->format('Y-m-d H:m:s') : NULL

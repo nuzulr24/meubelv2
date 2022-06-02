@@ -59,7 +59,10 @@ class PembayaranController extends Controller
         if(session()->has('email_pengguna') && $request->has('simpan')) {
 
             $validasi = Validator::make($request->all(), [
-                'bukti_pembayaran'  => 'required|mimes:jpg,jpeg,png'
+                'bukti_pembayaran'  => 'required|mimes:jpg,jpeg,png',
+                'no_rekening'  => 'required|integer',
+                'atas_nama'  => 'required',
+                'bank'  => 'required',
             ]);
 
             if($validasi->fails()) {
@@ -101,6 +104,9 @@ class PembayaranController extends Controller
 
                 DB::table('tbl_pembayaran')->where('id_pesanan', $id_pesanan)->update([
                     'foto_bukti'        =>  $id_pesanan.'.'.$extension,
+                    'atas_nama' => $request->input('atas_nama'),
+                    'no_rekening' => $request->input('no_rekening'),
+                    'bank' => $request->input('bank'),
                     'tanggal_upload'    =>  Carbon::now(),
                 ]);
 

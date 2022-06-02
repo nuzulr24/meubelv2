@@ -68,7 +68,7 @@
                                 </td>
                                 <td>{{ $item->nama_penerima }}</td>
                                 <td>{{ $item->no_telepon  }}</td>
-                                <td>JNE ({{ $item->layanan }})</td>
+                                <td>{{ strtoupper($item->kurir) }} ({{ $item->kurir === "cod" ? strtoupper($item->kurir_cod) : strtoupper($item->kurir) }})</td>
                                 <td>{{ $item->no_resi }}</td>
                                 <td>
                                     <span class="label bg-navy">Telah Di Kirim</span>
@@ -117,7 +117,7 @@
                                 <td id="id_{{ $counter }}">{{ $item->id_pesanan }}</td>
                                 <td>{{ $item->nama_penerima }}</td>
                                 <td>{{ $item->no_telepon  }}</td>
-                                <td>JNE-{{ $item->layanan }}</td>
+                                <td>{{ strtoupper($item->kurir) }} ({{ $item->kurir === "cod" ? strtoupper($item->kurir_cod) : strtoupper($item->kurir) }})</td>
                                 <td>{{ $item->no_resi }}</td>
                                 <td><span class="label bg-green">Telah Di Terima</span></td>
                                 <td>{{ $item->tanggal_diterima }}</td>
