@@ -42,7 +42,7 @@ img.product {
             </div>
             <div class="col-md-9 order-2">
                 <div class="row">
-                    <div class="col-md-12 mb-5">
+                    <div class="col-md-12">
                         <div class="float-md-left mb-4">
                             <h2 class="text-black h5">
                                 @if(empty($_GET['search']))
@@ -67,7 +67,7 @@ img.product {
                                 </figure>
                                 <div class="block-4-text p-4">
                                     <h3><a href="{{ route('detail_produk', ['id_barang' => $item->id_barang]) }}">{{ $item->nama_barang }}</a></h3>
-                                    <p class="mb-0">Official YoayoStore</p>
+                                    <p class="my-2">oleh {{ getContact()['title'] }}</p>
                                     <p class="text-primary font-weight-bold">{{ Rupiah::create($item->harga_satuan) }}</p>
                                 </div>
                             </div>
@@ -84,23 +84,11 @@ img.product {
                     @endforelse
                 </div>
 
-                @if($tersedia == true)
-                <div class="row" data-aos="fade-up">
-                    <div class="col-md-12 text-center">
-                        <div class="site-block-27">
-                            <ul>
-                                <li><a href="#">&lt;</a></li>
-                                <li class="active"><span>1</span></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#">5</a></li>
-                                <li><a href="#">&gt;</a></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="pagination">
+                    <?php
+                        echo $produk->links();
+                    ?>
                 </div>
-                @endif
             </div>
 
             <div class="col-md-3 order-1 mb-5 mb-md-0">

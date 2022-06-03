@@ -86,33 +86,34 @@ class KategoriController extends Controller
 
                 $data = DB::table('tbl_kategori')->select('foto')->where('id_kategori', $id_kategori)->first();
 
+                // if($request->hasFile('foto')) {
 
-                if($request->hasFile('foto')) {
+                //     Storage::delete('public/produk/'.$data->foto);
 
-                    Storage::delete('public/produk/'.$data->foto);
+                //     $save_foto = Storage::putFileAs(
+                //         'public/kategori/',
+                //         $request->file('foto'), $request->file('foto')->getClientOriginalName()
+                //     );
 
-                    $save_foto = Storage::putFileAs(
-                        'public/kategori/',
-                        $request->file('foto'), $request->file('foto')->getClientOriginalName()
-                    );
+                //     $foto_produk = basename($save_foto);
 
-                    $foto_produk = basename($save_foto);
+                // }
 
-                }
+                // DB::table('tbl_kategori')->where('id_kategori', $id_kategori)
+                //     ->update([
+                //         'nama_kategori' => $request->input('nama_kategori'),
+                //         'foto' => $request->hasFile('foto') ? $foto_produk : $data->foto
+                //     ]);
 
-                DB::table('tbl_kategori')->where('id_kategori', $id_kategori)
-                    ->update([
-                        'nama_kategori' => $request->input('nama_kategori'),
-                        'foto' => $request->hasFile('foto') ? $foto_produk : $data->foto
-                    ]);
-
-                return redirect()->route('kategori_produk')->with('success', 'Kategori Produk Berhasil Di Rubah');
+                // return redirect()->route('kategori_produk')->with('success', 'Kategori Produk Berhasil Di Rubah');
+                
+                echo $id_kategori;
 
             } 
 
         } else {
 
-            return back()->withErrors('Terjadi Kesalahan Saat Menyimpan Harap Gunakan Tombol Simpan Untuk Menyimpan Data');
+            // return back()->withErrors('Terjadi Kesalahan Saat Menyimpan Harap Gunakan Tombol Simpan Untuk Menyimpan Data');
 
         }
     }

@@ -3,13 +3,13 @@
 @section('title', 'Beranda')
 
 @section('content')
-<div class="site-blocks-cover" style="background-image: url({{ asset('user_assets/images/banner.jpg') }});" data-aos="fade">
+<div class="site-blocks-cover" style="background-image: url('<?= Storage::url('images/'. getContact()['background']) ?>')" data-aos="fade">
     <div class="container">
         <div class="row align-items-start align-items-md-center justify-content-end">
             <div class="col-md-5 text-center text-md-left pt-5 pt-md-0">
-                <h1 class="mb-2 text-white">Temukan Furnitur Mebel kamu</h1>
+                <h1 class="mb-2">Temukan Furnitur Terbaik kamu</h1>
                 <div class="intro-text text-center text-md-left">
-                    <p class="mb-4 text-white">{{ getContact()['short'] }}</p>
+                    <p class="mb-4">Dapatkan furnitur terbaik dengan harga yang variatif serta kualitas yang terjamin</p>
                     <p>
                         <a href="{{ route('produk') }}" class="btn btn-sm btn-primary">Belanja Sekarang</a>
                     </p>
@@ -66,39 +66,19 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0" data-aos="fade" data-aos-delay="">
-                <a class="block-2-item item1" href="{{ route('produk') }}?kategori=sepak-bola">
-                    <figure class="image">
-                        <img src="{{ asset('user_assets/images/soccer.jpg') }}" alt="" class="img-fluid">
-                    </figure>
-                    <div class="text">
-                        <span class="text-uppercase">Lihat Koleksi</span>
-                        <h3>Sepak Bola</h3>
-                    </div>
-                </a>
-            </div>
-            <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="100">
-                <a class="block-2-item item2" href="{{ route('produk') }}?kategori=basket">
-                    <figure class="image">
-                        <img src="{{ asset('user_assets/images/basketball.jpg') }}" alt="" class="img-fluid">
-                    </figure>
-                    <div class="text">
-                        <span class="text-uppercase">Lihat Koleksi</span>
-                        <h3>Basket</h3>
-                    </div>
-                </a>
-            </div>
-            <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="200">
-                <a class="block-2-item item3" href="{{ route('produk') }}?kategori=tennis">
-                    <figure class="image">
-                        <img src="{{ asset('user_assets/images/tennis.jpg') }}" alt="" class="img-fluid">
-                    </figure>
-                    <div class="text">
-                        <span class="text-uppercase">Lihat Koleksi</span>
-                        <h3>Tennis</h3>
-                    </div>
-                </a>
-            </div>
+            <?php foreach(DB::table('tbl_kategori')->take(3)->get() as $cat) { ?>
+                <div class="col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0" data-aos="fade" data-aos-delay="">
+                    <a class="block-2-item item1" href="{{ route('produk') }}?kategori=<?= str_slug($cat->nama_kategori) ?>">
+                        <figure class="image">
+                            <img src="<?= Storage::url('kategori/'. $cat->foto) ?>" alt="" class="img-fluid">
+                        </figure>
+                        <div class="text">
+                            <span class="text-uppercase">Lihat Koleksi</span>
+                            <h3><?= $cat->nama_kategori ?></h3>
+                        </div>
+                    </a>
+                </div>
+            <?php } ?>
         </div>
     </div>
 </div>

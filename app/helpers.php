@@ -45,7 +45,8 @@ function getContact()
         'address' => DB::table('tbl_website')->where('id', 9)->value('value'),
         'phone' =>  formatHandphone(DB::table('tbl_website')->where('id', 10)->value('value')),
         'email' =>  DB::table('tbl_website')->where('id', 11)->value('value'),
-        'short' =>  DB::table('tbl_website')->where('id', 14)->value('value')
+        'short' =>  DB::table('tbl_website')->where('id', 14)->value('value'),
+        'background' =>  DB::table('tbl_website')->where('id', 25)->value('value'),
     ];
 }
 

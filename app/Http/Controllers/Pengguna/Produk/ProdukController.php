@@ -44,7 +44,7 @@ class ProdukController extends Controller
             }
 
             return view('pengguna.produk.produk', [
-                'produk'        => $data_produk->get(),
+                'produk'        => $data_produk->simplePaginate(10),
                 'kategori'      => $data,
                 'data_filter'   => $nama_kategori,
                 'jumlah_barang' => DB::table('tbl_barang')
@@ -57,7 +57,7 @@ class ProdukController extends Controller
                 $search = '%'.$request->input('search').'%';
 
                 return view('pengguna.produk.produk', [
-                    'produk'        => DB::table('tbl_barang')->where('nama_barang', 'LIKE', $search)->get(),
+                    'produk'        => DB::table('tbl_barang')->where('nama_barang', 'LIKE', $search)->simplePaginate(10),
                     'kategori'      => $data,
                     'jumlah_barang' => DB::table('tbl_barang')
                 ]);
@@ -65,7 +65,7 @@ class ProdukController extends Controller
             } else {
 
                 return view('pengguna.produk.produk', [
-                    'produk'        => DB::table('tbl_barang')->get(),
+                    'produk'        => DB::table('tbl_barang')->simplePaginate(10),
                     'kategori'      => $data,
                     'jumlah_barang' => DB::table('tbl_barang')
                 ]);
