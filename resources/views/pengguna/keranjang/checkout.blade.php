@@ -59,8 +59,17 @@
                         </select>
                     </div>
                     <div id="personal_form" class="mt-3 d-none">
-                        <div class="alert alert-primary">
-                            <?php
+                        <?php
+                            $akun_pengguna = DB::table('tbl_detail_pengguna')->where('id_pengguna', session('id_pengguna'))->first();
+                            if(empty($akun_pengguna->id_kecamatan) || empty($akun_pengguna->alamat_rumah || empty($akun_pengguna->no_telepon))) {
+                        ?>
+                            <div class="alert alert-warning">
+                                <b>Maaf!</b> Anda belum mengatur informasi dibawah ini antara lain <br>
+                                - Alamat Rumah<br>
+                                - Alamat Tambahan (Kecamatan)<br>
+                                - No Telepon<br>
+                            </div>
+                        <?php } else {
                                 $get_kecamatan = DB::table('tbl_kecamatan')->where('id', $personal->id_kecamatan)->first();
                                 $get_kabupaten = DB::table('tbl_kabupaten')->where('id', $get_kecamatan->idkab)->first();
                                 $get_provinsi = DB::table('tbl_provinsi')->where('id', $get_kabupaten->idprov)->first();
@@ -68,12 +77,14 @@
                                 $name_kab = $get_kabupaten->tipe === "Kabupaten" ? 'Kabupaten ' . $get_kabupaten->nama : 'Kota ' . $get_kabupaten->nama;
                                 $name_prov = 'Prov. ' . $get_provinsi->nama;
                                 $name_kec = $get_kecamatan->nama;
-                            ?>
-                            - Nama Lengkap : {{ $personal->nama_lengkap }}<br>
-                            - Alamat Lengkap : {{ $personal->alamat_rumah }}<br>
-                            - Nomer Telepon : {{ $personal->no_telepon }}<br>
-                            - Tambahan : {{ 'Kec. ' . $name_kec . ', ' . $name_kab . ', ' . $name_prov}}<br>
-                        </div>
+                        ?>
+                            <div class="alert alert-primary">
+                                - Nama Lengkap : {{ $personal->nama_lengkap }}<br>
+                                - Alamat Lengkap : {{ $personal->alamat_rumah }}<br>
+                                - Nomer Telepon : {{ $personal->no_telepon }}<br>
+                                - Tambahan : {{ 'Kec. ' . $name_kec . ', ' . $name_kab . ', ' . $name_prov}}<br>
+                            </div>
+                        <?php } ?>
                     </div>
                     <div id="manual_form" class="mt-3 d-none">
                         <div class="form-group row">
@@ -242,7 +253,7 @@
                             </div>
 
                             <div class="form-group d-none btn-transfer">
-                                <input type="hidden" name="id_kec" id="id_kec" value="{{ $get_kecamatan->id }}">
+                                <input type="hidden" name="id_kec" id="id_kec" value="{{ !empty($get_kecamatan->id) ? $get_kecamatan->id : '' }}">
                                 <input type="hidden" name="alamat" id="opsi_alamat">
                                 <input type="hidden" name="ongkir" id="ongkos_kirim">
                                 <input type="hidden" name="metode_pembayaran" id="metode">
@@ -281,7 +292,7 @@
                     if(kurir === "cod") {
                         $('#ongkir').html('Rp. <?= DB::table('tbl_website')->where('id', 17)->value('value') ?>')
                         $('#ongkos_kirim').val(<?= DB::table('tbl_website')->where('id', 17)->value('value') ?>)
-                        $('#layanan').html('')
+                        $('#layanan').html('<option value="">-- tidak ditemukan layanan</option>')
                     } else {
                         $.get(url+'/get_layanan', {'id_kurir': kurir, 'berat': {{ $berat }}, 'id_kec': $('#id_kec').val()}).done(function(result){
                             if($.parseJSON(result)['rajaongkir']['status']['code'] == 200) {
@@ -339,7 +350,7 @@
                                             if(kurir === "cod") {
                                                 $('#ongkir').html('Rp. <?= DB::table('tbl_website')->where('id', 17)->value('value') ?>')
                                                 $('#ongkos_kirim').val(<?= DB::table('tbl_website')->where('id', 17)->value('value') ?>)
-                                                $('#layanan').html('')
+                                                $('#layanan').html('<option value="">-- tidak ditemukan layanan</option>')
                                             } else {
                                                 $.get(url+'/get_layanan', {'id_kurir': kurir, 'berat': {{ $berat }}, 'id_kec': $('#id_kec').val()}).done(function(result){
                                                     if($.parseJSON(result)['rajaongkir']['status']['code'] == 200) {

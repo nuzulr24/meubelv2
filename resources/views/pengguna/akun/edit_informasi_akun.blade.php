@@ -69,18 +69,64 @@
                                     ]) }}
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <label for="inp_provinsi" class="text-black">Provinsi</label>
-                        <select class="form-control" name="provinsi" id="provinsi"></select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="inp_kota" class="text-black">Kota</label>
-                        <select class="form-control" name="kabupaten" id="kabupaten"></select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="inp_provinsi" class="text-black">Kecamatan</label>
-                        <select class="form-control" name="kecamatan" id="kecamatan"></select>
-                    </div>
+
+                    <?php
+                        $data_kec = DB::table('tbl_detail_pengguna')->where('id_pengguna', session('id_pengguna'))->first();
+                        if(!empty($data_kec->id_kecamatan)) {
+                            $get_kecamatan = DB::table('tbl_kecamatan')->where('id', $data_kec->id_kecamatan)->first();
+                            $get_kabupaten = DB::table('tbl_kabupaten')->where('id', $get_kecamatan->idkab)->first();
+                            $get_provinsi = DB::table('tbl_provinsi')->where('id', $get_kabupaten->idprov)->first();
+
+                            $name_kab = $get_kabupaten->tipe === "Kabupaten" ? 'Kabupaten ' . $get_kabupaten->nama : 'Kota ' . $get_kabupaten->nama;
+                    ?>
+                        <div class="col-md-4">
+                            <label for="inp_provinsi" class="text-black">Provinsi</label>
+                            <select class="form-control" name="provinsi" id="provinsi">
+                                <?php
+                                    foreach(DB::table('tbl_provinsi')->get() as $prov) {
+                                        $select = $prov->id == $get_kabupaten->idprov ? 'selected' : '';
+                                ?>
+                                    <option value="<?= $prov->id ?>" <?= $select ?>><?= $prov->nama ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inp_kota" class="text-black">Kota</label>
+                            <select class="form-control" name="kabupaten" id="kabupaten">
+                                <?php
+                                    foreach(DB::table('tbl_kabupaten')->where('idprov', $get_kabupaten->idprov)->get() as $kab) {
+                                        $select = $get_kecamatan->idkab == $kab->id ? 'selected' : '';
+                                ?>
+                                    <option value="<?= $kab->id ?>" <?= $select ?>><?= $kab->nama ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inp_provinsi" class="text-black">Kecamatan</label>
+                            <select class="form-control" name="kecamatan" id="kecamatan">
+                                <?php
+                                    foreach(DB::table('tbl_kecamatan')->where('idkab', $get_kabupaten->id)->get() as $kec) {
+                                        $select = $get_kecamatan->id == $kec->id ? 'selected' : '';
+                                ?>
+                                    <option value="<?= $kec->id ?>" <?= $select ?>><?= $kec->nama ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } else { ?>
+                        <div class="col-md-4">
+                            <label for="inp_provinsi" class="text-black">Provinsi</label>
+                            <select class="form-control" name="provinsi" id="provinsi">
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inp_kota" class="text-black">Kota</label>
+                            <select class="form-control" name="kabupaten" id="kabupaten"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inp_provinsi" class="text-black">Kecamatan</label>
+                            <select class="form-control" name="kecamatan" id="kecamatan"></select>
+                        </div>
+                    <?php } ?>
                     <div class="form-group row mt-3">
                         <div class="col-md-12">
                             <button type="submit" name="simpan" value="true" class="btn btn-primary btn-lg">Simpan

@@ -15,23 +15,28 @@ class CheckoutController extends Controller
 
         if (session()->has('email_pengguna')) {
 
-            $data = DB::table('tbl_keranjang as keranjang')
-                ->join('tbl_barang as barang', 'barang.id_barang', 'keranjang.id_barang')
-                ->where('keranjang.id_pengguna', session('id_pengguna'));
+            $akun_pengguna = DB::table('tbl_detail_pengguna')->where('id_pengguna', session('id_pengguna'))->first();
+            if(empty($akun_pengguna->id_kecamatan) && empty($akun_pengguna->alamat_rumah && empty($akun_pengguna->no_telepon))) {
+                return redirect()->route('info_akun')->withErrors('Maaf, Terdapat informasi tambahan yang belum dilengkapi.');
+            } else {
 
-            $data_user = DB::table('tbl_pengguna as pengguna')
-                ->join('tbl_detail_pengguna as detail_pengguna', 'detail_pengguna.id_pengguna', 'pengguna.id_pengguna')
-                ->where('pengguna.id_pengguna', session('id_pengguna'));
+                $data = DB::table('tbl_keranjang as keranjang')
+                    ->join('tbl_barang as barang', 'barang.id_barang', 'keranjang.id_barang')
+                    ->where('keranjang.id_pengguna', session('id_pengguna'));
 
-            if ($data->exists()) {
+                $data_user = DB::table('tbl_pengguna as pengguna')
+                    ->join('tbl_detail_pengguna as detail_pengguna', 'detail_pengguna.id_pengguna', 'pengguna.id_pengguna')
+                    ->where('pengguna.id_pengguna', session('id_pengguna'));
 
-                return view('pengguna.keranjang.checkout', [
-                    'data_checkout' => $data->get(),
-                    'personal' => $data_user->get()->first(),
-                ]);
+                if ($data->exists()) {
 
+                    return view('pengguna.keranjang.checkout', [
+                        'data_checkout' => $data->get(),
+                        'personal' => $data_user->get()->first(),
+                    ]);
+
+                }
             }
-
         }
 
     }
