@@ -247,8 +247,15 @@ $('button.proses_pembayaran').click(function(){
 
 //** Lihat Bukti Pembayaran */
 
-$('button.lihat_foto').click(function(){
-    $('img#foto_bukti').attr('src', 'http://'+url.host+'/storage/pembayaran/'+$('td#id_'+this.id).html()+'.jpg')
+$('button.lihat_image').click(function(){
+    $('img#foto_bukti').attr('src', 'http://'+url.host+'/storage/pembayaran/1')
+    console.log($(this).data('image') + ' <== 1');
+})
+
+
+$('button.lihat_image').click(function(){
+    $('img#foto_bukti').attr('src', 'http://'+url.host+'/storage/pembayaran/'+$(this).data('image'))
+    // console.log($(this).data('image') + ' <== 2');
 })
 
 

@@ -75,7 +75,7 @@
                                     <td id="id_{{ $counter }}">{{ $item->id_pesanan }}</td>
                                     <td>
                                         @if(!empty($item->foto_bukti))
-                                            <button type="button" class="btn btn-warning btn-xs lihat_foto" data-toggle="modal" data-target="#lihat_foto" id="{{ $counter }}">
+                                            <button type="button" class="btn btn-warning btn-xs lihat_image" data-image="{{ $item->foto_bukti }}" data-toggle="modal" data-target="#lihat_foto" id="{{ $counter }}">
                                                 <i class="fa fa-search fa-fw"></i> Lihat Foto Bukti
                                             </button>
                                         @else
@@ -92,10 +92,15 @@
                                     </td>
                                     <td>{{ $item->batas_pembayaran }}</td>
                                     <td>
+                                        <?php $check_pesanan = DB::table('tbl_pesanan')->where('id_pesanan', $item->id_pesanan)->first(); ?>
                                         @if(!empty($item->foto_bukti))
-                                            <button type="button" class="btn btn-primary btn-xs proses_pembayaran" data-toggle="modal" data-target="#proses_pembayaran" id="{{ $counter }}">
-                                                <i class="fa fa-refresh fa-fw"></i> Proses Pembayaran
-                                            </button>
+                                            @if($check_pesanan->dibatalkan == 0)
+                                                <button type="button" class="btn btn-primary btn-xs proses_pembayaran" data-toggle="modal" data-target="#proses_pembayaran" id="{{ $counter }}">
+                                                    <i class="fa fa-refresh fa-fw"></i> Proses Pembayaran
+                                                </button>
+                                            @else
+                                            <span class="label label-danger">Pesanan Dibatalkan</span>
+                                            @endif
                                         @else
                                             <span class="label label-warning">Belum Dapat Diproses</span>
                                         @endif
@@ -139,7 +144,7 @@
                                 <td id="id_{{ $counter }}">{{ $item->id_pesanan }}</a>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-warning btn-xs lihat_foto" data-toggle="modal" data-target="#lihat_foto" id="{{ $counter }}">
+                                    <button type="button" class="btn btn-warning btn-xs lihat_image" data-toggle="modal" data-image="{{ $item->foto_bukti }}" data-target="#lihat_foto" id="{{ $counter }}">
                                         <i class="fa fa-search fa-fw"></i> Lihat Foto Bukti
                                     </button>
                                 </td>
