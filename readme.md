@@ -1,7 +1,3 @@
-## PROJECT SEMESTER (On Progress)
- - Halaman Admin Progress `80%`
- - Halaman Pengguna Progress `70%`
-
 ## Cara Installasi
  - Pastikan GIT sudah terinstall dan siap pakai.
  - Clone repository ini dengan link `https://github.com/nuzulr24/meubelv2`
