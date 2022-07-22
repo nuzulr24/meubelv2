@@ -15,14 +15,17 @@ class BerandaController extends Controller
 
             $content = [
                 'pengguna'              => DB::table('tbl_pengguna')->count(),
-                'barang'                => DB::table('tbl_barang')->where('stok_barang', '>', 0)->count(),
-                'pendapatan_sekarang'   => DB::table('tbl_pesanan')->where([
-                                            ['tanggal_pesanan', 'LIKE', '%'.explode(' ', Carbon::now())[0].'%'],
-                                            ['status_pesanan', '>', '3']
+                'barang'                => DB::table('tbl_barang')->count(),
+                'stok_mentah'           => DB::table('tbl_stock')->where('tipe_stok', 'Barang Mentah')->count(),
+                'stok_setengah'           => DB::table('tbl_stock')->where('tipe_stok', 'Barang Setengah Jadi')->count(),
+                'stok_jadi'           => DB::table('tbl_stock')->where('tipe_stok', 'Barang Jadi')->count(),
+                'pendapatan_sekarang'   => DB::table('tbl_transaction')->where([
+                                            ['created_at', 'LIKE', '%'.explode(' ', Carbon::now())[0].'%'],
+                                            ['type', 'Transaksi Masuk']
                                         ])->sum('total_bayar'),
-                'pendapatan_kemarin'  => DB::table('tbl_pesanan')->where([
-                                            ['tanggal_pesanan', 'LIKE', '%'.explode(' ', Carbon::yesterday())[0].'%'],
-                                            ['status_pesanan', '>', '3']
+                'pendapatan_kemarin'  => DB::table('tbl_transaction')->where([
+                                            ['created_at', 'LIKE', '%'.explode(' ', Carbon::now())[0].'%'],
+                                            ['type', 'Transaksi Keluar']
                                         ])->sum('total_bayar'),
                 'admin'                 => DB::table('tbl_admin')->where('diblokir', 0)->count()
             ];

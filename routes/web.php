@@ -9,332 +9,10 @@ use Illuminate\Http\Request;
  *
  */
 
+Route::get('/', 'Admin\BerandaController@index')->name('beranda_admin');
+
 /** Halaman Beranda Utama */
-
-# METHOD GET
-Route::get('/', 'Pengguna\BerandaController@index')->name('beranda');
-Route::get('get_kategori', function() {
-
-    $kategori = [];
-
-    foreach(DB::table('tbl_kategori')->select('nama_kategori')->get() as $key => $value) {
-        $kategori[] = $value->nama_kategori;
-    }
-
-    return response()->json($kategori);
-
-})->name('get_kategori');
-Route::get('get_data_counter', function() {
-
-    $pembayaran = DB::table('tbl_pembayaran')->where([
-        ['id_pengguna', session('id_pengguna')],
-    ]);
-
-    $list = [
-        'keranjang' => DB::table('tbl_keranjang')->where('id_pengguna', session('id_pengguna'))->count(),
-        'pesanan'   => DB::table('tbl_pesanan')->where([['id_pengguna', '=', session('id_pengguna')], ['status_pesanan', '<=', 4]])->count(),
-        'pembayaran'=> !empty($pembayaran->first()->foto_bukti) && $pembayaran->first()->selesai != 1  ? $pembayaran->count() : '0',
-    ];
-
-    return response()->json($list);
-
-})->name('data_counter');
-
-# METHOD POST
-Route::post('hubungi', 'Pengguna\EmailController@kontak')->name('hubungi_kami');
-
-
-/** Halaman Autentikasi Pengguna */
-
-# METHOD GET
-Route::get('masuk', 'Pengguna\Autentikasi\LoginController@index')->name('login');
-Route::get('daftar', 'Pengguna\Autentikasi\RegisterController@index')->name('register');
-Route::get('keluar', 'Pengguna\Autentikasi\LoginController@logout')->name('logout');
-
-# METHOD POST
-Route::post('masuk', 'Pengguna\Autentikasi\LoginController@login')->name('proses_login');
-Route::post('daftar', 'Pengguna\Autentikasi\RegisterController@register')->name('proses_regis');
-
-
-/** Halaman Lupa Password Pengguna */
-
-# METHOD GET
-Route::get('lupa-password', 'Pengguna\Autentikasi\ResetPasswordController@index')->name('lupa_password');
-Route::get('lupa-password/reset', 'Pengguna\Autentikasi\ResetPasswordController@reset_page')->name('reset_page');
-
-# METHOD POST
-Route::post('lupa-password/send', 'Pengguna\Autentikasi\ResetPasswordController@send_token')->name('send_token');
-
-# METHOD PUT
-Route::put('lupa-password/proses', 'Pengguna\Autentikasi\ResetPasswordController@reset_password')->name('proses_password');
-
-
-/** Halaman Akun Pengguna */
-
-# METHOD GET
-Route::get('info_akun', 'Pengguna\Akun\AkunController@index')->name('info_akun');
-Route::get('info_akun/edit', 'Pengguna\Akun\InformasiAkunController@index')->name('edit_info_akun');
-Route::get('info_akun/ganti_password', 'Pengguna\Akun\GantiPasswordController@index')->name('ganti_password');
-
-# METHOD PUT
-Route::put('info_akun/edit', 'Pengguna\Akun\InformasiAkunController@simpan_informasi')->name('simpan_info_akun');
-Route::put('info_akun/ganti_password', 'Pengguna\Akun\GantiPasswordController@simpan_password')->name('simpan_password');
-
-
-/** Halaman Produk*/
-
-# METHOD GET
-Route::get('produk', 'Pengguna\Produk\ProdukController@index')->name('produk');
-Route::get('produk/detail/{id_barang}', 'Pengguna\Produk\DetailProdukController@index')->name('detail_produk');
-
-# METHOD POST
-Route::post('produk/tambah-keranjang/{id_barang}', 'Pengguna\Produk\DetailProdukController@masukan_keranjang')->name('tambah_keranjang');
-
-
-
-
-/** Halaman Keranjang */
-
-# METHOD GET
-Route::get('keranjang', 'Pengguna\Keranjang\KeranjangController@index')->name('keranjang');
-
-# METHOD PUT
-Route::put('keranjang/update/{id_barang}', 'Pengguna\Keranjang\KeranjangController@update')->name('update_keranjang');
-
-# METHOD DELETE
-Route::delete('keranjang/delete/{id_barang}', 'Pengguna\Keranjang\KeranjangController@delete')->name('delete_keranjang');
-
-/** Halaman Checkout */
-
-# METHOD GET
-Route::get('checkout', 'Pengguna\Keranjang\CheckoutController@index')->name('checkout');
-Route::get('selesai', function(){
-    return view('pengguna.keranjang.terimakasih');
-});
-Route::get('get_provinsi', function() {
-    $curl = curl_init();
-
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://api.rajaongkir.com/starter/province",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "UTF-8",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => [
-            "key: 1a84ef0ff7cac9bb764f1087e64da8d3"
-        ],
-    ]);
-
-    $result = curl_exec($curl);
-
-    return response()->json($result);
-});
-
-Route::get('get_kurir', function() {
-    echo '<option value="">-- pilih expedisi --</option>';
-    foreach(DB::table('tbl_kurir')->get() as $kr){
-        $kurir = explode("|", DB::table('tbl_website')->where('id', 19)->value('value'));
-        if(in_array($kr->id, $kurir)){
-            echo '<option value="'.$kr->rajaongkir.'">'.$kr->nama.'</option>';
-        }
-    }
-});
-
-Route::get('get_prov', function() {
-    echo '<option value="">-- pilih provinsi --</option>';
-    foreach(DB::table('tbl_provinsi')->get() as $kr){
-        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
-    }
-});
-
-Route::get('get_prov', function() {
-    echo '<option value="">-- pilih provinsi --</option>';
-    foreach(DB::table('tbl_provinsi')->get() as $kr){
-        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
-    }
-});
-
-Route::get('get_city', function(Request $request) {
-    echo '<option value="">-- pilih kota --</option>';
-    foreach(DB::table('tbl_kabupaten')->where('idprov', $request->input('provinsi'))->get() as $kr){
-        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
-    }
-});
-
-Route::get('get_kec', function(Request $request) {
-    echo '<option value="">-- pilih kecamatan --</option>';
-    foreach(DB::table('tbl_kecamatan')->where('idkab', $request->input('kecamatan'))->get() as $kr){
-        echo '<option value="'.$kr->id.'">'.$kr->nama.'</option>';
-        // dd($kr);
-    }
-});
-
-Route::get('track/{id}', function(Request $request, $id)
-{
-    if(empty($id))
-    {
-        echo 'what??';
-    } else {
-        $ids = DB::table('tbl_pesanan')->where('no_resi', $id)->first();
-        $search = DB::table('tbl_pesanan')->where('id_pesanan', $ids->id_pesanan)->first();
-        $curl = curl_init();
-        
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://pluginongkoskirim.com/cek-tarif-ongkir/front/resi-amp',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => [
-                'kurir' => $search->kurir === "cod" ? $search->kurir_cod : $search->kurir,
-                'resi' => $id
-            ],
-        CURLOPT_HTTPHEADER => array(
-            'x-api-key: bGajwpDHrfCn3kFoyet6Ms5hx0qvKQ8SPgcdNVR7',
-            'Cookie: laravel_session=eyJpdiI6Im1FNkkreGpBWUE0cGg3bXZ6amZNMWc9PSIsInZhbHVlIjoiaEJyWCtzRDZ4WkpRcjZDbDBTaDNWc20zd3JvQ0RQbzFhdllBWDF6aVptaXc1TVwvV3RzQmY1c2ZLemdNcE8rQjR0Y2pnXC9kWDdVMGxvWVJYUGxzdmRxUT09IiwibWFjIjoiN2E4YzUzNzA5ZDVkOWY1YjAzODg1ZTlkZmE4NjAxZDczNDFiZDgwN2Q2ZjUyMjFhNWE0ZjRiZTdhY2ViNzYxMyJ9'
-        ),
-        ));
-        
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        return view('pengguna.pesanan.detail_resi', ['detail_resi' => json_decode($response, true), 'invoice' => $search->id_pesanan]);
-    }
-});
-
-Route::get('get_kota', function(Request $request) {
-    $curl = curl_init();
-
-    $id = $request->input('provinsi');
-
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://api.rajaongkir.com/starter/city?province=".$id,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "UTF-8",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => [
-            "key: 1a84ef0ff7cac9bb764f1087e64da8d3"
-        ],
-    ]);
-
-    $result = curl_exec($curl);
-
-    return response()->json($result);
-});
-
-# METHOD POST
-Route::post('get_cost', function(Request $request) {
-    $curl = curl_init();
-
-    $id_city     = $request->input('kota');
-    $berat       = $request->input('berat');
-
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://api.rajaongkir.com/starter/cost",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => "origin=115&destination=".$id_city."&weight=".$berat."&courier=jne",
-        CURLOPT_HTTPHEADER => [
-            'content-type: application/x-www-form-urlencoded',
-            "key: 1a84ef0ff7cac9bb764f1087e64da8d3"
-        ],
-    ]);
-
-    $result = curl_exec($curl);
-
-    return response()->json($result);
-});
-
-Route::get('get_layanan', function(Request $request) {
-    $curl = curl_init();
-
-    $id_city     = DB::table('tbl_kecamatan')->where('id', $request->input('id_kec'))->value('rajaongkir');
-    
-    $kurir     = $request->input('id_kurir');
-    $berat       = $request->input('berat');
-
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://bukuwarung.com/wp-admin/admin-ajax.php',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => array(
-            'action' => 'post_cost',
-            'origin' => DB::table('tbl_website')->where('id', 18)->value('value'),
-            'originType' => 'city',
-            'destination' => $id_city,
-            'destinationType' => 'subdistrict',
-            'weight' => $berat,
-            'courier' => $kurir
-        ),
-    ));
-
-    $response = curl_exec($curl);
-    curl_close($curl);
-
-    return response()->json($response);
-});
-
-Route::post('checkout', 'Pengguna\Keranjang\CheckoutController@save_checkout')->name('save_checkout');
-
-
-/** Halaman Pesanan*/
-
-# METHOD GET
-Route::get('pesanan', 'Pengguna\Pesanan\PesananController@index')->name('pesanan');
-Route::get('pesanan/detail_pesanan/{id_pesanan}', 'Pengguna\Pesanan\PesananController@detail_pesanan')->name('detail_pesanan');
-Route::get('pesanan/riwayat', 'Pengguna\Pesanan\PesananController@riwayat_pesanan')->name('riwayat_pesanan');
-
-# METHOD put
-Route::put('pesanan/dibatalkan/{id_pesanan}', 'Pengguna\Pesanan\PesananController@dibatalkan')->name('pesanan_dibatalkan');
-Route::put('pesanan/konfirmasi/{id_pesanan}', 'Pengguna\Pesanan\PesananController@konfirmasi_pesanan')->name('konfirmasi_pesanan');
-
-
-
-/** Halaman Pembayaran*/
-
-# METHOD GET
-Route::get('pembayaran', 'Pengguna\Pesanan\PembayaranController@index')->name('pembayaran');
-Route::get('pembayaran/upload-bukti/{id_pesanan}', 'Pengguna\Pesanan\PembayaranController@upload_bukti')->name('upload_bukti');
-
-
-# METHOD POST
-Route::put('pembayaran/upload-bukti/{id_pesanan}/save', 'Pengguna\Pesanan\PembayaranController@save_bukti')->name('save_bukti');
-
-
-/** Halaman Invoice*/
-
-Route::get('invoice/{id_invoice}', 'Pengguna\Pesanan\PesananController@invoice')->name('invoice');
-
-
-
-/**
- * --------------------------------------------------------------------------
- * ROUTE HALAMAN ADMIN
- * --------------------------------------------------------------------------
- *
- */
 Route::group(['prefix' => 'admin'], function(){
-
-    /** Halaman Beranda Utama */
 
     # METHOD GET
     Route::get('/', 'Admin\BerandaController@index')->name('beranda_admin');
@@ -414,6 +92,39 @@ Route::group(['prefix' => 'admin'], function(){
     # METHOD DELETE
     Route::delete('hapus_produk/{id_barang}', 'Admin\Produk\ProdukController@hapus_produk');
 
+    /** Halaman Stok */
+
+    # METHOD GET
+    Route::get('stok', 'Admin\Stok\StokController@index')->name('list_stok');
+    Route::get('get_stok/{id_barang}', function($id_barang) {
+
+        $data = DB::table('tbl_stok')->where('id_barang', $id_barang)->first();
+
+        return response()->json($data);
+
+    }); // AJAX
+
+    # METHOD POST
+    Route::post('stok', 'Admin\Stok\StokController@tambah_stok')->name('tambah_stok');
+
+    # METHOD PUT
+    Route::put('edit_stok/{id_barang}', 'Admin\Stok\StokController@edit_stok');
+
+    Route::put('pindah_produk/{id_barang}', 'Admin\Stok\StokController@pindah_produk');
+
+    # METHOD DELETE
+    Route::delete('hapus_stok/{id_barang}', 'Admin\Stok\StokController@hapus_stok');
+
+    # METHOD GET
+    Route::get('pos', 'Admin\Pos\PosController@index')->name('list_pos');
+    Route::get('get_produk_pos', function(Request $request) {
+
+
+    }); // AJAX
+
+    # METHOD POST
+    Route::post('pos', 'Admin\Pos\PosController@checkout')->name('checkout');
+    Route::put('edit_pesanan/{id_barang}', 'Admin\Pos\PosController@edit_pesanan');
 
     /** Halaman Pengaturan */
     Route::get('pengaturan', 'Admin\Pengaturan\PengaturanController@index')->name('pengaturan');
@@ -742,18 +453,7 @@ Route::group(['prefix' => 'admin'], function(){
     # METHOD PUT
     Route::put('transaksi/selesai/{id_pesanan}', 'Admin\Transaksi\PengirimanController@selesai');
     Route::put('transaksi/dibatalkan/{id_pesanan}', 'Admin\Transaksi\PengirimanController@batalkan_pesanan');
-
-
-    /** Halaman Laporan : Transaksi */
-
-    # METHOD GET
-    Route::get('laporan/transaksi', 'Admin\Laporan\TransaksiController@index')->name('laporan_transaksi');
-
-    # METHOD POST
-    Route::post('laporan/transaksi/print', 'Admin\Laporan\TransaksiController@print_transaksi')->name('print_transaksi');
-
 });
-
 /**
  * --------------------------------------------------------------------------
  * Testing Unit Route

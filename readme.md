@@ -14,12 +14,7 @@
 ## Database
 `Pastikan Database Sudah Di Update Sesuai Yang Ada Di Repository` dengan import database yang ada pada folder file sql
 
-## Halaman Pengguna
-url: 127.0.0.1:8000
-email: maulana.pengguna@email.com
-pass: pengguna123
-
 ## Halaman Admin
 url: 127.0.0.1:8000/admin
-email: nuzul.admin@email.com
+email: miqbal.admin@email.com
 pass: admin123

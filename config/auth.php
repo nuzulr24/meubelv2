@@ -42,7 +42,7 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'jwt',
             'provider' => 'users',
         ],
     ],
@@ -74,6 +74,8 @@ return [
             'driver' => 'database',
             'table' => 'tbl_pengguna',
         ],
+
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
     ],
 
     /*

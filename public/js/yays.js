@@ -156,7 +156,42 @@ $('a.hapus_kategori').click(function(){
     $('form#form_hapus_kategori').attr('action','http://'+url.host+'/admin/hapus_kategori/'+$('#id_'+this.id).html())
 })
 
+//** Edit stok */
 
+$('a.edit_stok').click(function(){
+    $('h4.modal-title').html('Edit Stok - #'+$('#id_'+this.id).html())
+    $('form#form_edit_stok').attr('action','http://'+url.host+'/admin/edit_stok/'+$('#id_'+this.id).html())
+    $('input.id_kategori').val($('#id_'+this.id).html())
+    $('input.nama_kategori').val($('#nama_'+this.id).html())
+    $('input.jumlah_stok').val($('#stok_'+this.id).html())
+})
+
+$('a.pindah_produk').click(function(){
+    $('h4.modal-title').html('Pindah Barang - #'+$('#id_'+this.id).html())
+    $('form#form_edit_pindah').attr('action','http://'+url.host+'/admin/pindah_produk/'+$('#id_'+this.id).html())
+    $('input.id_kategori').val($('#id_'+this.id).html())
+    $('input.nama_kategori').val($('#nama_'+this.id).html())
+})
+
+//** Hapus kategori */
+
+$('a.hapus_stok').click(function(){
+    $('form#form_hapus_kategori').attr('action','http://'+url.host+'/admin/hapus_stok/'+$('#id_'+this.id).html())
+})
+
+$('select#id_produk').on('change', function() {
+    let harga = $(this).find(':selected').data('harga');
+    $('.jumlah').on('keyup', function() {
+        let qty = $(this).val();
+        let total = harga * qty;
+        if(qty != 0)
+        {
+            $('p#harga').html(`Rp. ${total}`)
+        } else {
+            $('p#harga').html(`-`)
+        }
+    })
+})
 
 
 //** SUPERADMIN : ADMIN *///////////////////////////////////////////////////////////////////////////
